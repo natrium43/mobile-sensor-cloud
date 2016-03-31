@@ -1,0 +1,3 @@
+# README
+
+Dashboard application directory.

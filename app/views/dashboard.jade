@@ -1,0 +1,20 @@
+//- View: Dashboard layout
+
+extends layout
+
+block styles
+    link(rel='stylesheet', href='/stylesheets/dashboard.css')
+
+block scripts
+    script(src='/javascripts/dashboard.js')
+        
+block content
+    #wrapper.container-fluid
+        //- load dashboard view based on the account type: user, admin or owner
+        - if (response.account === 'owner')
+            include _dashboard_owner
+        - else if (response.account === 'admin')
+            include _dashboard_admin
+        - else
+            include _dashboard_user
+        

@@ -1,0 +1,74 @@
+doctype html
+html
+  head
+    title=response.title
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css")
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
+    link(rel='stylesheet', href='/stylesheets/layout.css')
+    block styles
+  body
+    nav.nav.navbar-inverse.navbar-fixed-top
+      .container-fluid
+        .navbar-header
+          button.navbar-toggle.collapsed(type='button', data-toggle='collapse' data-target='#navbar-collapse' aria-expanded='false')
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.navbar-brand(href="#")
+            i.fa.fa-cloud.fa-lg
+              | &nbsp;
+            | Mobile Sensor Cloud
+        #navbar-collapse.collapse.navbar-collapse
+          ul.nav.navbar-nav.navbar-left
+            - if (response.page !== 'login')
+              li(class="#{ response.page === 'dashboard' ? 'active' : '' }")
+                  a(href='/dashboard')
+                      i.fa.fa-dashboard.fa-lg
+                          | &nbsp;
+                      | Dashboard
+              //- li(class="#{ response.page === 'services' ? 'active' : '' }")
+              //-     a(href='/services')
+              //-         i.fa.fa-clone.fa-lg
+              //-             | &nbsp;
+              //-         | Services
+          ul.nav.navbar-nav.navbar-right
+            - if (response.page === 'login')
+              li
+                a#sign-up(href='#')
+                  i.fa.fa-user.fa-lg
+                    | &nbsp;
+                  | Sign Up
+            - else
+              li.dropdown
+                a.dropdown-toggle(href='#', data-toggle='dropdown')
+                    i.fa.fa-user.fa-lg
+                        | &nbsp;
+                    span#username
+                      = response.username
+                    span.caret
+                ul.dropdown-menu
+                    li
+                        a(href='#')
+                            | My Account
+                    li
+                        a(href='#')
+                            | Billing
+                    li.divider
+                    li
+                        a(href='/logout')
+                            | Logout
+
+    block content
+
+    #modal.modal.fade(role='dialog', tabindex='-1')
+
+    nav.navbar.navbar-default.navbar-fixed-bottom
+      .container-fluid
+        p.navbar-brand.pull-right
+          small
+            | &copy; Mobile Sensor Cloud 2016.
+
+    script(src="https://code.jquery.com/jquery-1.12.2.min.js")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")
+    script(src='/javascripts/layout.js')
+    block scripts

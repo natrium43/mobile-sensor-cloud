@@ -1,0 +1,88 @@
+.modal-dialog.modal-lg
+    .modal-content
+        .modal-header
+            button.close(type='button' data-dismiss='modal' aria-label='Close')
+            h3.modal-title
+                i.fa.fa-user.fa-lg
+                    | &nbsp;
+                | Sign Up
+        .modal-body
+            .alert.alert-info
+                i.fa.fa-info-circle.fa-lg
+                    | &nbsp;
+                | Please fill out the form to complete your registration.
+                | &nbsp;
+                em
+                    | All fields are required.
+            form
+                .row
+                    .container-fluid.col-lg-6.col-md-6
+                        h4
+                            | Account Information
+                            hr
+                        .form-group
+                            label
+                                | Name
+                            input.form-control.spacing(type='text', name='firstname', placeholder='First Name')
+                            input.form-control.spacing(type='text', name='lastname', placeholder='Last Name')
+                        .form-group
+                            label
+                                | Address
+                            input.form-control.spacing(type='text', name='address1', placeholder='Address 1')
+                            input.form-control.spacing(type='text', name='address2', placeholder='Address 2')
+                        .form-group
+                            label
+                                | Email
+                            input.form-control(type='email', name='email', placeholder='Email Address')
+                        .form-group
+                            label
+                                | Account
+                            .radio
+                                label
+                                    input(type='radio', name='account', value='user', checked)
+                                    | Sensor User
+                            .radio
+                                label
+                                    input(type='radio', name='account', value='admin')
+                                    | Sensor Admin
+                            .radio
+                                label
+                                    input(type='radio', name='account', value='owner')
+                                    | Sensor Owner
+                        .form-group
+                            label
+                                | Tenant
+                            select.form-control.spacing(name='tenant')
+                                option(disabled, selected)
+                                    | Choose a tenant
+                            .help-block
+                                em
+                                    | Choose the tenant you want to register your account under.
+                            input.form-control.spacing(type='text', name='newtenant', placeholder='Tenant Name', style='display: none;')
+                            .help-block(style='display: none;')
+                                em
+                                    | To create a new tenant, enter a unique tenant name.
+                    .container-fluid.col-lg-6.col-md-6
+                        h4
+                            | Login Information
+                            hr
+                        .form-group
+                            label
+                                | Username
+                            input.form-control(type='text', name='username', placeholder='Username', readonly)
+                            .help-block
+                                em
+                                    | Your email address is also your username.
+                        .form-group
+                            label
+                                | Password
+                            input.form-control(type='password', name='pass1', placeholder='Password')
+                        .form-group
+                            label
+                                | Confirm Password
+                            input.form-control(type='password', name='pass2', placeholder='Confirm Password')
+        .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal')
+                | Close
+            button.btn.btn-primary(type='button')
+                | Submit

@@ -1,0 +1,14 @@
+#wrapper {
+	margin-top: 75px;
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+.dashboard-panel .panel-heading {
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+.dashboard-panel .panel-body {
+	min-height: 300px;
+}

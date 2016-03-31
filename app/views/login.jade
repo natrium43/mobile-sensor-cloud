@@ -1,0 +1,56 @@
+extends layout
+
+block styles
+  link(rel='stylesheet', href='/stylesheets/login.css')
+
+block scripts
+  script(src='/javascripts/login.js')
+
+block content
+  #wrapper.container
+    #login-panel.col-lg-6.col-lg-offset-3.col-md-7.col-md-offset-3.col-sm-8.col-sm-offset-2
+      form#login-form.panel.panel-default.form-horizontal(action='/login/authenticate', method='post')
+        .panel-heading
+          h3
+            | Account Login
+        .panel-body
+          .form-group
+            label.col-sm-2.col-lg-3.col-md-3.control-label
+              | Username
+            .col-sm-10.col-lg-7.col-md-7
+              input.form-control(type='email', name='username')
+          .form-group
+            label.col-sm-2.col-lg-3.col-md-3.control-label
+              | Password
+            .col-sm-10.col-lg-7.col-md-7
+              input.form-control(type='password', name='password')
+          .form-group
+            label.col-sm-2.col-lg-3.col-md-3.control-label
+              | Account Type
+            .col-sm-10.col-lg-7.col-md-7
+              .radio
+                label
+                  input(type='radio', name='account', value='user', checked)
+                  | Sensor User
+              .radio
+                label
+                  input(type='radio', name='account', value='admin')
+                  | Sensor Admin
+              .radio
+                label
+                  input(type='radio', name='account', value='owner')
+                  | Sensor Owner
+          .form-group
+            label.col-sm-2.col-lg-3.col-md-3.control-label
+              | Tenant
+            .col-sm-10.col-lg-7.col-md-7
+              select.form-control(name='tenant')
+                option(disabled, selected)
+                  | Select a tenant
+        .panel-footer
+          button.btn.btn-primary.pull-right(type='submit', name='submit')
+            i.fa.fa-sign-in.fa-lg
+              | &nbsp;
+            | Login
+          div.clearfix
+
