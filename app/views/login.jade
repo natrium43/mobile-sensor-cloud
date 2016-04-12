@@ -14,39 +14,40 @@ block content
           h3
             | Account Login
         .panel-body
+          - if (response.alert)
+            .alert.alert-danger
+              = response.alert
           .form-group
             label.col-sm-2.col-lg-3.col-md-3.control-label
-              | Username
+              | Email
             .col-sm-10.col-lg-7.col-md-7
-              input.form-control(type='email', name='username')
+              input.form-control(type='email', name='email', placeholder='Email Address')
           .form-group
             label.col-sm-2.col-lg-3.col-md-3.control-label
               | Password
             .col-sm-10.col-lg-7.col-md-7
-              input.form-control(type='password', name='password')
+              input.form-control(type='password', name='password', placeholder='Password')
           .form-group
             label.col-sm-2.col-lg-3.col-md-3.control-label
               | Account Type
             .col-sm-10.col-lg-7.col-md-7
               .radio
                 label
-                  input(type='radio', name='account', value='user', checked)
+                  input(type='radio', name='account', value='users', checked)
                   | Sensor User
               .radio
                 label
-                  input(type='radio', name='account', value='admin')
-                  | Sensor Admin
+                  input(type='radio', name='account', value='owners')
+                  | Sensor Owner
               .radio
                 label
-                  input(type='radio', name='account', value='owner')
-                  | Sensor Owner
+                  input(type='radio', name='account', value='admins')
+                  | Sensor Admin
           .form-group
             label.col-sm-2.col-lg-3.col-md-3.control-label
               | Tenant
             .col-sm-10.col-lg-7.col-md-7
-              select.form-control(name='tenant')
-                option(disabled, selected)
-                  | Select a tenant
+              input.form-control(type='text', name='tenant', placeholder='Tenant Name')
         .panel-footer
           button.btn.btn-primary.pull-right(type='submit', name='submit')
             i.fa.fa-sign-in.fa-lg

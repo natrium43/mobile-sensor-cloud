@@ -11,10 +11,10 @@ block scripts
 block content
     #wrapper.container-fluid
         //- load dashboard view based on the account type: user, admin or owner
-        - if (response.account === 'owner')
+        - if (response.session.account === 'owners')
             include _dashboard_owner
-        - else if (response.account === 'admin')
+        - else if (response.session.account === 'admins')
             include _dashboard_admin
-        - else
+        - else if (response.session.account === 'users')
             include _dashboard_user
         
