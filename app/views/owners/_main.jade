@@ -1,0 +1,31 @@
+extends ../layout
+
+block styles
+    link(rel='stylesheet', href='/stylesheets/dashboard.css')
+        
+block content
+    .main-pane
+        .left-pane.col-xs-3.col-sm-3.col-md-3.col-lg-2
+            br
+            ul.nav.nav-pills.nav-stacked
+                li(class="#{render.section === 'sensor-management' ? 'active' : ''}")
+                    a(href='/owners/sensor-management', title='Virtual Sensor Management')
+                        h5
+                            i.fa.fa-map-marker.fa-lg
+                            span.hidden-xs
+                                | &nbsp;Sensor Management
+               
+                hr
+                li
+                    a(href='/logout')
+                        h5
+                            i.fa.fa-sign-out
+                            span.hidden-xs
+                                | &nbsp;Logout
+
+        .right-pane.col-xs-9.col-sm-9.col-md-9.col-lg-10
+            br
+            block right_pane
+
+block scripts
+    script(src='/javascripts/dashboard.js')

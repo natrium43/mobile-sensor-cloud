@@ -1,0 +1,52 @@
+.modal-dialog.modal-xlg
+    .modal-content
+        form#sensor-catalog(onsubmit='return false;')
+            .modal-header
+                button.close(type='button' data-dismiss='modal' aria-label='Close')
+                    span(aria-hidden='true')
+                        | &times;
+                h4.modal-title
+                    i.fa.fa-database
+                        | &nbsp;
+                    | Sensor Catalog
+            .modal-body(style='background-color:#f8f8f8;')
+                .container-fluid
+                    - for (var i = 0; i < 12; i++)
+                        .col-lg-3
+                            .panel.panel-default
+                                .panel-body
+                                    .row
+                                        label.control-label.col-lg-7
+                                            | Type
+                                        .col-lg-5
+                                            | Air flow
+                                    .row
+                                        label.control-label.col-lg-7
+                                            | Min. Sample Period
+                                        .col-lg-5
+                                            | n/a
+                                    .row
+                                        label.control-label.col-lg-7
+                                            | Max. Value
+                                        .col-lg-5
+                                            | n/a
+                                    .row
+                                        label.control-label.col-lg-7
+                                            | Min. Value
+                                        .col-lg-5
+                                            | n/a
+                                    .row
+                                        label.control-label.col-lg-7
+                                            | Response Time
+                                        .col-lg-5
+                                            | n/a
+                                    .row
+                                        .container-fluid
+                                            button.btn.btn-primary.btn-block.btn-sm
+                                                | Request
+
+
+            .modal-footer
+                button.btn.btn-default(type='button', data-dismiss='modal')
+                    | Close
+script(src='/javascripts/modal.js')

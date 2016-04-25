@@ -1,0 +1,31 @@
+.modal-dialog
+    .modal-content
+        form#edit-collection-form.form-horizontal(onsubmit='return false;')
+            .modal-header
+                button.close(type='button' data-dismiss='modal' aria-label='Close')
+                    span(aria-hidden='true')
+                        | &times;
+                h4.modal-title
+                    i.fa.fa-cog
+                    | &nbsp;Collection Frequency
+            .modal-body
+                .alert.alert-info
+                    i.fa.fa-info-circle.fa-lg
+                        | &nbsp;
+                    | Set the number of collections per day.
+                .form-group
+                    label.control-label.col-lg-3
+                        | Request ID
+                    div.col-lg-8(style='padding-top: 5px;')
+                        input.form-control.spacing(type='text', name='subscription', value="#{render.query.requestid}", readonly)
+                .form-group
+                    label.control-label.col-lg-3
+                        | Frequency
+                    div.col-lg-8
+                        input.form-control.spacing(type='text', name='frequency', value="#{render.query.frequency}", placeholder='Number of collections per day')
+            .modal-footer
+                button.btn.btn-default(type='button', data-dismiss='modal')
+                    | Cancel
+                button.btn.btn-primary(type='submit')
+                    | Save
+script(src='/javascripts/modal.js')

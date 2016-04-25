@@ -1,0 +1,32 @@
+extends _main
+
+block right_pane
+	.panel.panel-default
+		.panel-heading.clearfix
+			h4.pull-left
+				| Registered Sensors
+			button.btn.btn-primary.pull-right(id='register-sensor', title='Register a new sensor')
+				i.fa.fa-plus
+				| &nbsp;Register Sensor
+		.panel-body
+			.table-responsive
+				table.table.table-striped(id='sensor-table')
+					thead
+						tr
+							th
+								| Sensor Type
+							th
+								| Value
+							th
+								| Actions
+					tbody
+						- for (var i = 0; i < 10; i++)
+							tr
+								td
+									| Sensor #{i}
+								td
+									| Value #{i}
+								td
+									button.delete-owner-sensor.btn.btn-danger.btn-xs
+										i.fa.fa-trash
+										| &nbsp;Remove

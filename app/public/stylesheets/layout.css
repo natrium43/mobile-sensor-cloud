@@ -5,6 +5,16 @@
 	margin-bottom: 100px;
 }
 
+.spacing {
+	margin: 2px 2px 2px 0;
+}
+
+.modal-xlg {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 @media (max-width: 768px) {
 	#wrapper {
 		margin-top: 75px;

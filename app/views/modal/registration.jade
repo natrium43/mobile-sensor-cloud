@@ -5,7 +5,7 @@
                 button.close(type='button' data-dismiss='modal' aria-label='Close')
                     span(aria-hidden='true')
                         | &times;
-                h3.modal-title
+                h4.modal-title
                     i.fa.fa-user.fa-lg
                         | &nbsp;
                     | Sign Up
@@ -14,9 +14,8 @@
                     i.fa.fa-info-circle.fa-lg
                         | &nbsp;
                     | Please fill out the form to complete your registration.
-                    | &nbsp;
                     em
-                        | All fields are required.
+                        | &nbsp;All fields are required.
                 .validation-error.alert.alert-danger(style='display: none;')
                 .row
                     .container-fluid.col-lg-6.col-md-6
@@ -67,7 +66,7 @@
                         .form-group
                             label
                                 | Email
-                            input.form-control.spacing(type='text', name='email', placeholder='Email Address')
+                            input.form-control.spacing(type='email', name='email', placeholder='Email Address')
                             button.btn.btn-primary.btn-xs(type='button', name="email-availability")
                                 | Check Availability
                             .results.pull-right(style='text-align: right;')
@@ -84,7 +83,7 @@
                             input.form-control(type='password', name='pass2', placeholder='Confirm Password')
             .modal-footer
                 button.btn.btn-default(type='button', data-dismiss='modal')
-                    | Close
+                    | Cancel
                 button.btn.btn-primary(type='submit')
                     | Submit
-script(src='/javascripts/registration.js')
+script(src='/javascripts/modal.js')

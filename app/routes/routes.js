@@ -1,20 +1,9 @@
 // Variables are passed to Views using the 2nd param for res.render()
 // In Views, we can access the variables using "response.{variable_name}"
-var CONFIG = {
-	'db_server': 'http://127.0.0.1:3001'
-};
-
+var _GLOBAL = require('../global');
 var express = require('express');
 var router = express.Router();
 var request = require('request'); // handle HTTP requests
-
-// session variables:
-// => account
-// => email
-// => id (references user_id/owner_id)
-// => tenant (name -- for users only)
-// => tenant_id (id -- for users only)
-// => address (for users only)
 
 // Default route
 router.get('/', function(req, res, next) {
@@ -32,14 +21,14 @@ router.get('/login', function(req, res, next) {
 	// check if session exists
 	// navigate to dashboard if user is already logged in
 	if (sess.account && sess.email) {
-		res.redirect('/dashboard');
+		res.redirect('/' + sess.account);
 		return;
 	}
 
 	// clear session
 	sess.destroy();
 	res.render('login', {
-		response: {
+		render: {
 			title: 'Login',
 			page: 'login',
 			alert: (sess.login_error ? sess.login_error : null)
@@ -47,26 +36,14 @@ router.get('/login', function(req, res, next) {
 	});
 });
 
-router.get('/dashboard', function(req, res, next) {
-	var sess = req.session;
-	// navigate to login if no session
-	if (sess.account == undefined || sess.email == undefined) {
-		req.session.destroy();
-		res.redirect('/login');
-		return;
-	}
-	res.render('dashboard', {
-		response: {
-			title: 'Dashboard',
-			page: 'dashboard',
-			session: sess
+router.get('/modal/:view', function(req, res, next) {
+	var query = req.query;
+	var view = 'modal/' + req.params.view;
+	res.render(view, {
+		render: {
+			query: query
 		}
 	});
-});
-
-router.get('/modal/:view', function(req, res, next) {
-	var view = 'modal/' + req.params.view;
-	res.render(view, {});
 });
 
 // authenticate user
@@ -75,13 +52,11 @@ router.get('/modal/:view', function(req, res, next) {
 router.post('/login/authenticate', function(req, res, next) {	
 	var postData = req.body;
 	var sess = req.session;
-	var opt = {
-		url: CONFIG.db_server + '/authenticate',
-		method: 'POST',
+	request.post({
+		url: _GLOBAL.config.db_server + '/authenticate',
 		json: true,
 		body: postData
-	};
-	request(opt, function(error, response, body) {
+	}, function(error, response, body) {
 		if (!error && body) {
 			// set session variables
 			sess.account = postData.account;
@@ -96,7 +71,7 @@ router.post('/login/authenticate', function(req, res, next) {
 				sess.address = body.address;
 			}
 			
-			res.redirect('/dashboard');
+			res.redirect('/' + postData.account);
 			return;
 		}
 
@@ -110,3 +85,11 @@ router.post('/login/authenticate', function(req, res, next) {
 });
 
 module.exports = router;
+
+// session variables:
+// => account
+// => email
+// => id (references user_id/owner_id)
+// => tenant (name -- for users only)
+// => tenant_id (id -- for users only)
+// => address (for users only)

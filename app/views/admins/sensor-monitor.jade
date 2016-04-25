@@ -1,0 +1,12 @@
+extends _main
+
+block right_pane
+	- for (var i = 0; i < 2; i++)
+		.col-lg-6.col-md-12
+			.panel.panel-default
+				.panel-heading
+				.panel-body(style='height:200px;')
+	- for (var i = 0; i < 8; i++)
+		.col-lg-3.col-md-4.col-sm-6
+			.panel.panel-default
+				.panel-body(style='height:200px;')

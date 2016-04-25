@@ -1,0 +1,47 @@
+extends ../layout
+
+block styles
+    link(rel='stylesheet', href='/stylesheets/dashboard.css')
+
+block content
+    .main-pane
+        .left-pane.col-xs-3.col-sm-3.col-md-3.col-lg-2
+            br
+            ul.nav.nav-pills.nav-stacked
+                li(class="#{render.section === 'tenants' ? 'active' : ''}")
+                    a(href='/admins/tenants', title='Tenant Management')
+                        h5
+                        i.fa.fa-globe
+                        span.hidden-xs
+                            | &nbsp;Tenant Management
+                li(class="#{render.section === 'templates' ? 'active' : ''}")
+                    a(href='/admins/templates', title='Template Management')
+                        h5
+                        i.fa.fa-folder-o
+                        span.hidden-xs
+                            | &nbsp;Template Management
+                li(class="#{render.section === 'sensor-monitor' ? 'active' : ''}")
+                    a(href='/admins/sensor-monitor', title='Virtual Sensor Monitoring')
+                        h5
+                        i.fa.fa-area-chart
+                        span.hidden-xs
+                            | &nbsp;Sensor Monitoring
+                li(class="#{render.section === 'resources' ? 'active' : ''}")
+                    a(href='/admins/resources', title='Resource Management')
+                        h5
+                        i.fa.fa-tasks
+                        span.hidden-xs
+                            | &nbsp;Resource Management
+                hr
+                li
+                    a(href='/logout')
+                        h5
+                        i.fa.fa-sign-out
+                        span.hidden-xs
+                            | &nbsp;Logout
+        .right-pane.col-xs-9.col-sm-9.col-md-9.col-lg-10
+            br
+            block right_pane
+
+block scripts
+    script(src='/javascripts/dashboard.js')

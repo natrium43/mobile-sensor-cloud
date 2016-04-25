@@ -1,0 +1,82 @@
+extends _main
+
+block right_pane
+	.row
+		.container-fluid
+			.panel.panel-default
+				.panel-heading.clearfix
+					button.btn.btn-primary.pull-right.spacing(id='new-sensor-request', title='Provision new sensor')
+						i.fa.fa-plus
+						| &nbsp;New Request
+				.panel-body
+					ul.nav.nav-tabs
+						li.active
+							a(href='#sensor-templates-tab', data-toggle='tab')
+								| Sensor Status
+						li
+							a(href='#sensor-group-templates-tab', data-toggle='tab')
+								| Request History
+					.tab-content
+						#sensor-templates-tab.tab-pane.fade.in.active
+							br
+							.container-fluid
+								table.table.table-striped(id='sensor-group-templates-table')
+									thead
+										tr
+											th
+												| Request ID
+											th
+												| Status
+											th
+												| Type
+											th
+												| Last Collection
+									tbody
+										- for (var i = 0; i < 6; i++)
+											- var c = 'success';
+											- var rand = parseInt(Math.floor((Math.random() * 10) + 1));
+											- if ((i + rand) % 3 === 0)
+												- c = 'danger';
+											tr
+												td
+													| 100#{i}
+												td
+													span.label(class="label-#{c}")
+														= (c === 'success' ? 'Active' : 'Inactive')
+												td
+													| Air flow
+												td
+													- var rand = Math.floor((Math.random() * 15) + 1);
+														= (new Date('4/' + rand + '/2016')).toDateString()
+
+						#sensor-group-templates-tab.tab-pane.fade.in
+							br
+							.container-fluid
+								table.table.table-striped(id='sensor-group-templates-table')
+									thead
+										tr
+											th
+												| Request ID
+											th
+												| Sensor ID
+											th
+												| Type
+											th
+												| Provision Date
+											th
+												| Terminate Date
+									tbody
+										- for (var i = 0; i < 10; i++)
+											- var rand = Math.floor((Math.random() * 15) + 1);
+											- var rand2 = parseInt(rand) + parseInt(Math.floor((Math.random() * 15) + 1));
+											tr
+												td
+													| 100#{i}
+												td
+													| 200#{i}
+												td
+													| Air flow
+												td
+													= (new Date('4/' + rand + '/2016')).toDateString()
+												td
+													= (new Date('4/' + rand2 + '/2016')).toDateString()

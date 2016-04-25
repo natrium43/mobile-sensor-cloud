@@ -1,0 +1,46 @@
+.modal-dialog
+    .modal-content
+        form#register-sensor.form-horizontal(onsubmit='return false;')
+            .modal-header
+                button.close(type='button' data-dismiss='modal' aria-label='Close')
+                    span(aria-hidden='true')
+                        | &times;
+                h4.modal-title
+                    i.fa.fa-map-marker
+                        | &nbsp;
+                    | Register Sensor
+            .modal-body
+                .alert.alert-info
+                    i.fa.fa-info-circle.fa-lg
+                        | &nbsp;
+                    | To register a sensor, please fill out the form.
+                    em
+                        | &nbsp;All fields are required.
+                .row
+                    .container-fluid
+                        .form-group
+                            label.col-sm-2.control-label
+                                | Format
+                            .col-sm-9
+                                input.form-control(type='text', name='format', placeholder='Sensor Format')
+                        .form-group
+                            label.col-sm-2.control-label
+                                | ID
+                            .col-sm-9
+                                input.form-control(type='text', name='sensor-id', placeholder='Sensor ID')
+                        .form-group 
+                            label.col-sm-2.control-label
+                                | Description
+                            .col-sm-9
+                                input.form-control(type='text', name='description', placeholder='Sensor Description')
+                        .form-group    
+                            label.col-sm-2.control-label
+                                | Type
+                            .col-sm-9
+                                input.form-control(type='text', name='type', placeholder='Sensor Type')
+            .modal-footer
+                button.btn.btn-default(type='button', data-dismiss='modal')
+                    | Cancel
+                button.btn.btn-primary(type='submit')
+                    | Register
+script(src='/javascripts/modal.js')

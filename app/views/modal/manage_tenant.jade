@@ -1,0 +1,51 @@
+.modal-dialog.modal-lg(data-tenant-id="#{render.query.tenant_id}")
+    .modal-content
+        form#create-tenant(onsubmit='return false;')
+            .modal-header
+                button.close(type='button' data-dismiss='modal' aria-label='Close')
+                    span(aria-hidden='true')
+                        | &times;
+                h4.modal-title
+                    i.fa.fa-user.fa-lg
+                        | &nbsp;
+                    | Manage Tenant&nbsp;
+                    span.label.label-default
+                        = render.query.tenant
+            .modal-body
+                .row
+                    .col-lg-5.col-md-5
+                        .panel.panel-default
+                            .panel-heading
+                                h5
+                                    | Available
+                            ul.list-group
+                                li.list-group-item
+                                    | Template 1
+                                li.list-group-item
+                                    | Template 2
+                                li.list-group-item
+                                    | Template 4
+                    .col-lg-2.col-md-2(style='margin-top: 50px;')
+                        button.btn.btn-success.btn-block
+                            i.fa.fa-arrow-right.fa-lg
+                        br
+                        button.btn.btn-danger.btn-block
+                            i.fa.fa-arrow-left.fa-lg
+                    .col-lg-5.col-md-5
+                        .panel.panel-default
+                            .panel-heading
+                                h5
+                                    | In Use
+                            ul.list-group
+                                li.list-group-item
+                                    | Template 3
+                                li.list-group-item
+                                    | Template 5
+                                li.list-group-item
+                                    | Template 6
+            .modal-footer
+                button.btn.btn-default(type='button', data-dismiss='modal')
+                    | Close
+                button.btn.btn-primary(type='submit')
+                    | Save
+script(src='/javascripts/modal.js')

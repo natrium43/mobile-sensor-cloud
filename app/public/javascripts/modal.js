@@ -1,4 +1,5 @@
 $(function() {
+	// registration
 	$('#registration-form').on('change', 'input[type="radio"][name="account"]', function() {
 		var form = $(this).closest('form');
 
@@ -99,5 +100,57 @@ $(function() {
 				alert('An error has occurred while processing your account.  Please try again later.');
 			}
 		});
+	});
+
+	// admin create tenant form
+	$('#create-tenant-form').on('click', 'button[name="tenant-availability"]', function() {
+		var input = $(this).prev();
+		var results = $(this).next();
+		var tenant = input.val();
+		if (tenant.length > 0) {
+			REST.checkTenantAvailable(tenant, function(data) {
+				if (data) {
+					results.removeClass('text-danger').addClass('text-success').html('Tenant name is <strong>available</strong>.');
+				} else {
+					results.removeClass('text-success').addClass('text-danger').html('Tenant name <strong>already exists</strong>.');
+				}
+				window.setTimeout(function(){ results.empty(); }, 3000);
+			});
+		}
+	}).on('submit', function() {
+		console.log('submit');
+		var name = $(this).closest('form').find('input[name="tenant"]').val();
+		if (name.length > 0) {
+			REST.addTenant({'name': name}, function(data) {
+				if (data) {
+					$('#modal').modal('hide');
+					alert('Tenant created successfully!');
+					window.location.reload();
+				} else {
+					alert('An error has occurred while creating tenant.  Please make sure tenant name is available.');
+				}
+			});
+		}
+	});
+
+	$('#my-account-form').on('submit', function() {
+		var form = $(this).closest('form');
+		var data = {
+			'name': $.trim(form.find('input[name="name"]').val()),
+			'address': $.trim(form.find('textarea[name="address"]').val())
+		};
+
+		if (data.name !== '' && data.address !== '') {
+			var email = form.find('input[name="email"]').val();
+			var tenant = form.find('input[name="tenant"]').val();
+			REST.updateUser(email, tenant, data, function(data) {
+				if (data) {
+					$('#modal').modal('hide');
+					alert('Your account has been updated!');
+				} else {
+					alert('An error has occurred while updating your account.');
+				}
+			});
+		}
 	});
 });

@@ -1,0 +1,100 @@
+extends _main
+
+block right_pane
+	.panel.panel-default
+		.panel-heading.clearfix
+			button.btn.btn-primary.pull-right.spacing(id='create-sensor-template', title='Create new sensor template', data-template='sensor')
+				i.fa.fa-plus
+				| &nbsp;Sensor Template
+			button.btn.btn-primary.pull-right.spacing(id='create-sensor-group-template', title='Create new sensor group template', data-template='sensor-group')
+				i.fa.fa-plus
+				| &nbsp;Sensor Group Template
+		.panel-body
+			ul.nav.nav-tabs
+				li.active
+					a(href='#sensor-templates-tab', data-toggle='tab')
+						| Sensor Templates
+				li
+					a(href='#sensor-group-templates-tab', data-toggle='tab')
+						| Sensor Group Templates
+			.tab-content
+				#sensor-templates-tab.tab-pane.fade.in.active
+					br
+					.container-fluid
+						.table-responsive
+							table.table.table-striped(id='sensor-templates-table')
+								thead
+									tr
+										th
+											| Template ID
+										th
+											| Min. Sample Period
+										th
+											| Max. Value
+										th
+											| Min. Value
+										th
+											| Response Time
+										th
+											| Type
+										th
+											| Availablility
+										th
+											| Actions
+								tbody
+									- for (var i = 0; i < 12; i++)
+										tr
+											td
+												| 100#{i}
+											td
+												| #{Math.floor((Math.random() * 10) + i)} ms
+											td
+												| #{Math.floor((Math.random() * 500) + 100)}
+											td
+												| #{Math.floor((Math.random() * 100) + 25)}
+											td
+												| #{Math.floor((Math.random() * 30) + 5)} min
+											td
+												| Air flow
+											td
+												- var datestr = '4/' + Math.floor((Math.random() * 30) + 2) + '/2016';
+												= (new Date(datestr)).toDateString()
+											td
+												button.edit-sensor-template.btn.btn-default.btn-sm(title='Edit template', data-template='sensor')
+													i.fa.fa-edit
+												button.delete-sensor-template.btn.btn-danger.btn-sm(title='Delete template', data-template='sensor')
+													i.fa.fa-trash
+				#sensor-group-templates-tab.tab-pane.fade.in
+					br
+					.container-fluid
+						table.table.table-striped(id='sensor-group-templates-table')
+							thead
+								tr
+									th
+										| Group ID
+									th
+										| Template ID(s)
+									th
+										| Type
+									th
+										| Availablility
+									th
+										| Actions
+							tbody
+								- for (var i = 0; i < 5; i++)
+									tr
+										td
+											| 200#{i}
+										td
+											- var sensor = Math.floor((Math.random() * 7) + 1);
+											| 100#{sensor}, 100#{sensor + Math.floor((Math.random() * 3) + 1)}
+										td
+											| Various
+										td
+											- var datestr = '4/' + Math.floor((Math.random() * 30) + 2) + '/2016';
+											= (new Date(datestr)).toDateString()
+										td
+											button.edit-sensor-group-template.btn.btn-default.btn-sm(title='Edit template', data-template='sensor-group')
+												i.fa.fa-edit
+											button.delete-sensor-group-template.btn.btn-danger.btn-sm(title='Delete template', data-template='sensor-group')
+												i.fa.fa-trash

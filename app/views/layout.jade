@@ -2,7 +2,7 @@ doctype html
 html
   head
     title
-      = response.title
+      = render.title
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css")
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css")
     link(rel='stylesheet', href='/stylesheets/layout.css')
@@ -20,20 +20,8 @@ html
               | &nbsp;
             | Mobile Sensor Cloud
         #navbar-collapse.collapse.navbar-collapse
-          ul.nav.navbar-nav.navbar-left
-            - if (response.page !== 'login')
-              li(class="#{ response.page === 'dashboard' ? 'active' : '' }")
-                  a(href='/dashboard')
-                      i.fa.fa-dashboard.fa-lg
-                          | &nbsp;
-                      | Dashboard
-              //- li(class="#{ response.page === 'services' ? 'active' : '' }")
-              //-     a(href='/services')
-              //-         i.fa.fa-clone.fa-lg
-              //-             | &nbsp;
-              //-         | Services
           ul.nav.navbar-nav.navbar-right
-            - if (response.page === 'login')
+            - if (render.page === 'login')
               li
                 a#sign-up(href='#')
                   i.fa.fa-user.fa-lg
@@ -43,18 +31,9 @@ html
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown')
                     i.fa.fa-user.fa-lg
-                        | &nbsp;
-                    span#username
-                      = response.session.email
+                    | &nbsp;&nbsp;#{render.session.email}
                     span.caret
-                ul.dropdown-menu
-                    li
-                        a(href='#')
-                            | My Account
-                    li
-                        a(href='#')
-                            | Billing
-                    li.divider
+                  ul.dropdown-menu
                     li
                         a(href='/logout')
                             | Logout
