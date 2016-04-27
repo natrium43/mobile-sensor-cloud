@@ -1,52 +1,97 @@
-.modal-dialog.modal-xlg
-    .modal-content
-        form#sensor-catalog(onsubmit='return false;')
-            .modal-header
-                button.close(type='button' data-dismiss='modal' aria-label='Close')
-                    span(aria-hidden='true')
-                        | &times;
-                h4.modal-title
-                    i.fa.fa-database
-                        | &nbsp;
-                    | Sensor Catalog
-            .modal-body(style='background-color:#f8f8f8;')
-                .container-fluid
-                    - for (var i = 0; i < 12; i++)
-                        .col-lg-3
-                            .panel.panel-default
-                                .panel-body
-                                    .row
-                                        label.control-label.col-lg-7
-                                            | Type
-                                        .col-lg-5
-                                            | Air flow
-                                    .row
-                                        label.control-label.col-lg-7
-                                            | Min. Sample Period
-                                        .col-lg-5
-                                            | n/a
-                                    .row
-                                        label.control-label.col-lg-7
-                                            | Max. Value
-                                        .col-lg-5
-                                            | n/a
-                                    .row
-                                        label.control-label.col-lg-7
-                                            | Min. Value
-                                        .col-lg-5
-                                            | n/a
-                                    .row
-                                        label.control-label.col-lg-7
-                                            | Response Time
-                                        .col-lg-5
-                                            | n/a
-                                    .row
-                                        .container-fluid
-                                            button.btn.btn-primary.btn-block.btn-sm
-                                                | Request
+extends _template
 
-
-            .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal')
-                    | Close
-script(src='/javascripts/modal.js')
+block content
+    .modal-dialog.modal-xlg
+        .modal-content
+            form#sensor-catalog(onsubmit='return false;')
+                .modal-header
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true')
+                            | &times;
+                    h4.modal-title
+                        i.fa.fa-database
+                            | &nbsp;
+                        | Sensor Catalog
+                .modal-body(style='background-color:#f8f8f8;')
+                    .container-fluid
+                        - for (var i = 0; i < render.response.templates.length; i++)
+                            - var t = render.response.templates[i];
+                            .col-lg-4.col-md-6
+                                .panel.panel-default
+                                    .panel-body
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Template ID
+                                            .col-lg-5
+                                                = t.templateId
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Min. Sample Period
+                                            .col-lg-5
+                                                = t.minSamplePeriod
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Max. Value
+                                            .col-lg-5
+                                                = t.maxValue
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Min. Value
+                                            .col-lg-5
+                                                = t.minValue
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Response Time
+                                            .col-lg-5
+                                                = t.responseTime ? t.responseTime : 'n/a'
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Type
+                                            .col-lg-5
+                                                = t.type
+                                        .row
+                                            .container-fluid
+                                                button.btn.btn-primary.btn-block
+                                                    | Request
+                        - for (var i = 0; i < render.response.group_templates.length; i++)
+                            - var t = render.response.group_templates[i];
+                            .col-lg-4.col-md-6
+                                .panel.panel-default
+                                    .panel-body
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Group Template ID
+                                            .col-lg-5
+                                                = t.templateGroupId
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Sensor Group
+                                            .col-lg-5
+                                                = t.sensorGroup.length > 0? t.sensorGroup : 'n/a'
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Description
+                                            .col-lg-5
+                                                = t.description ? t.description : 'n/a'
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | &nbsp;
+                                            .col-lg-5
+                                                | &nbsp;
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | &nbsp;
+                                            .col-lg-5
+                                                | &nbsp;
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | &nbsp;
+                                            .col-lg-5
+                                                | &nbsp;
+                                        .row
+                                            .container-fluid
+                                                button.btn.btn-primary.btn-block
+                                                    | Request
+                .modal-footer
+                    button.btn.btn-default(type='button', data-dismiss='modal')
+                        | Close

@@ -1,4 +1,4 @@
-extends _main
+extends _template
 
 block right_pane
 	.panel.panel-default
@@ -14,19 +14,26 @@ block right_pane
 					thead
 						tr
 							th
+								| Sensor ID
+							th
 								| Sensor Type
 							th
-								| Value
+								| Sensor Format
 							th
-								| Actions
+								| Description
 					tbody
-						- for (var i = 0; i < 10; i++)
+						- for (var i = 0; i < render.response.length; i ++)
+							- var sensor = render.response[i];
 							tr
 								td
-									| Sensor #{i}
+									= sensor.id
 								td
-									| Value #{i}
+									= sensor.type
 								td
-									button.delete-owner-sensor.btn.btn-danger.btn-xs
+									= sensor.format
+								td
+									= sensor.description
+								td
+									button.delete-owner-sensor.btn.btn-danger.btn-xs(data-sensor-id="#{sensor.id}")
 										i.fa.fa-trash
 										| &nbsp;Remove

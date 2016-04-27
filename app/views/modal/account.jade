@@ -1,44 +1,46 @@
-.modal-dialog
-    .modal-content
-        form#my-account-form.form-horizontal(onsubmit='return false;')
-            .modal-header
-                button.close(type='button' data-dismiss='modal' aria-label='Close')
-                    span(aria-hidden='true')
-                        | &times;
-                h4.modal-title
-                    i.fa.fa-user
-                        | &nbsp;
-                    | My Account
-            .modal-body
-                .form-group
-                    label.control-label.col-lg-3
-                        | Name
-                    div.col-lg-8
-                        input.form-control.spacing(type='text', name='name', placeholder='First and Last Name')
-                .form-group
-                    label.control-label.col-lg-3
-                        | Address
-                    div.col-lg-8
-                        textarea.form-control.spacing(name='address', placeholder='Address')
-                .form-group
-                    label.control-label.col-lg-3
-                        | Email Address
-                    div.col-lg-8
-                        input.form-control.spacing(type='text', value='', name='email', readonly)
-                .form-group
-                    label.control-label.col-lg-3
-                        | Account Type
-                    div.col-lg-8
-                        input.form-control.spacing(type='text', value='', name='account', readonly)
-                .form-group
-                    label.control-label.col-lg-3
-                        | Tenant
-                    div.col-lg-8
-                        input.form-control.spacing(type='text', value='', name='tenant', readonly)
+extends _template
 
-            .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal')
-                    | Close
-                button.btn.btn-primary(type='submit')
-                    | Save
-script(src='/javascripts/modal.js')
+block content
+    .modal-dialog
+        .modal-content
+            form#my-account-form.form-horizontal(onsubmit='return false;')
+                .modal-header
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true')
+                            | &times;
+                    h4.modal-title
+                        i.fa.fa-user
+                            | &nbsp;
+                        | My Account
+                .modal-body
+                    .form-group
+                        label.control-label.col-lg-3
+                            | Name
+                        div.col-lg-8
+                            input.form-control.spacing(type='text', name='name', placeholder='First and Last Name')
+                    .form-group
+                        label.control-label.col-lg-3
+                            | Address
+                        div.col-lg-8
+                            textarea.form-control.spacing(name='address', placeholder='Address')
+                    .form-group
+                        label.control-label.col-lg-3
+                            | Email Address
+                        div.col-lg-8
+                            input.form-control.spacing(type='text', value='', name='email', readonly)
+                    .form-group
+                        label.control-label.col-lg-3
+                            | Account Type
+                        div.col-lg-8
+                            input.form-control.spacing(type='text', value='', name='account', readonly)
+                    .form-group
+                        label.control-label.col-lg-3
+                            | Tenant
+                        div.col-lg-8
+                            input.form-control.spacing(type='text', value='', name='tenant', readonly)
+
+                .modal-footer
+                    button.btn.btn-default(type='button', data-dismiss='modal')
+                        | Close
+                    button.btn.btn-primary(type='submit')
+                        | Save

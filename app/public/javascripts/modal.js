@@ -1,3 +1,4 @@
+// Modal
 $(function() {
 	// registration
 	$('#registration-form').on('change', 'input[type="radio"][name="account"]', function() {
@@ -12,7 +13,7 @@ $(function() {
 		var select = form.find('select[name="tenant"]');
 		if (account === 'users') {
 			select.html('<option disabled selected>Choose a tenant</option>');
-			REST.getTenants(function(data){
+			USER_DB.getTenants(function(data){
 				if (data) {
 					for (var i = 0; i < data.length; i++) {
 						select.append('<option value=' + data[i].tenant_id + '>' + data[i].name + '</option>');
@@ -29,7 +30,7 @@ $(function() {
 		var tenant = (account === 'users' ? form.find('select[name="tenant"] option:selected').text() : null);
 
 		// check if email address is available
-		REST.checkEmailAvailable(account, email, tenant, function(data) {
+		USER_DB.checkEmailAvailable(account, email, tenant, function(data) {
 			if (data) {
 				results.removeClass('text-danger').addClass('text-success').html('Email address is <strong>available</strong>.');
 			} else {
@@ -92,7 +93,7 @@ $(function() {
 			postdata['tenant'] = parseInt(tenant); // use tenant_id not tenant name
 		}
 
-		REST.addUser(account, postdata, function(data){
+		USER_DB.addUser(account, postdata, function(data){
 			if (data) {
 				$('#modal').modal('hide');
 				alert('Account created successfully! Please log into your account.');
@@ -108,7 +109,7 @@ $(function() {
 		var results = $(this).next();
 		var tenant = input.val();
 		if (tenant.length > 0) {
-			REST.checkTenantAvailable(tenant, function(data) {
+			USER_DB.checkTenantAvailable(tenant, function(data) {
 				if (data) {
 					results.removeClass('text-danger').addClass('text-success').html('Tenant name is <strong>available</strong>.');
 				} else {
@@ -118,13 +119,10 @@ $(function() {
 			});
 		}
 	}).on('submit', function() {
-		console.log('submit');
 		var name = $(this).closest('form').find('input[name="tenant"]').val();
 		if (name.length > 0) {
-			REST.addTenant({'name': name}, function(data) {
+			USER_DB.addTenant({'name': name}, function(data) {
 				if (data) {
-					$('#modal').modal('hide');
-					alert('Tenant created successfully!');
 					window.location.reload();
 				} else {
 					alert('An error has occurred while creating tenant.  Please make sure tenant name is available.');
@@ -133,6 +131,7 @@ $(function() {
 		}
 	});
 
+	// user account update
 	$('#my-account-form').on('submit', function() {
 		var form = $(this).closest('form');
 		var data = {
@@ -143,7 +142,7 @@ $(function() {
 		if (data.name !== '' && data.address !== '') {
 			var email = form.find('input[name="email"]').val();
 			var tenant = form.find('input[name="tenant"]').val();
-			REST.updateUser(email, tenant, data, function(data) {
+			USER_DB.updateUser(email, tenant, data, function(data) {
 				if (data) {
 					$('#modal').modal('hide');
 					alert('Your account has been updated!');
@@ -152,5 +151,127 @@ $(function() {
 				}
 			});
 		}
+	});
+
+	// owner register sensor
+	$('#register-sensor-form').on('submit', function() {
+		var form = $(this).closest('form');
+		var elems = form.serializeArray();
+		var postdata = {};
+		var val;
+		for(var i = 0; i < elems.length; i++) {
+			val = $.trim(elems[i].value);
+			if (val.length > 0) {
+				postdata[elems[i].name] = val;
+			}
+		}
+		postdata['id'] = parseInt(postdata['id']);
+		if (postdata['id'] !== NaN) {
+			$.post('/add/sensorlist', postdata, function(response, textStatus, jqXHR) {
+				window.location.reload();
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while registering the sensor.')
+			});
+		} else {
+			alert('Please make sure to enter a valid Sensor ID (must be a number).')
+		}
+	});
+
+	// admin create new sensor template
+	$('#create-sensor-template-form').on('submit', function() {
+		var form = $(this).closest('form');
+		var elems = form.serializeArray();
+		var postdata = {};
+		var val;
+		for(var i = 0; i < elems.length; i++) {
+			val = $.trim(elems[i].value);
+			if (val.length > 0) {
+				postdata[elems[i].name] = val;
+			}
+		}
+		postdata['templateId'] = parseInt(postdata['templateId']);
+		if (postdata['templateId'] !== NaN) {
+			if (form.find('input[type="hidden"]').val() === 'edit') {
+				$.post('/update/templatelist/' + postdata['templateId'], postdata, function(response, textStatus, jqXHR) {
+					window.location.reload();
+				}).error(function(jqXHR, textStatus, errorThrown) {
+					alert('An error has occurred while updating the sensor template.');
+				});
+			} else {
+				$.post('/add/templatelist', postdata, function(response, textStatus, jqXHR) {
+					window.location.reload();
+				}).error(function(jqXHR, textStatus, errorThrown) {
+					alert('An error has occurred while creating the sensor template.');
+				});
+			}
+		} else {
+			alert('Please make sure to enter a valid Template ID (must be a number).')
+		}
+	});
+
+	// admin create new sensor template
+	$('#create-sensor-group-template-form').on('submit', function() {
+		var form = $(this).closest('form');
+		var elems = form.serializeArray();
+		var postdata = {};
+		var val;
+		for(var i = 0; i < elems.length; i++) {
+			val = $.trim(elems[i].value);
+			if (val.length > 0) {
+				if (elems[i].name === 'sensorGroup') {
+					// convert comma-separated list to array of integers
+					postdata[elems[i].name] = val.replace(/ /g, '').split(",").map(function(v) { return parseInt(v); });
+				} else {
+					postdata[elems[i].name] = val;
+				}
+			} else if (elems[i].name === 'sensorGroup') {
+				postdata[elems[i].name] = [];
+			}
+		}
+		postdata['templateGroupId'] = parseInt(postdata['templateGroupId']);
+		if (postdata['templateGroupId'] !== NaN) {
+			if (form.find('input[type="hidden"]').val() === 'edit') {
+				// not available
+			} else {
+				$.post('/add/templategrouplist', postdata, function(response, textStatus, jqXHR) {
+					window.location.reload();
+				}).error(function(jqXHR, textStatus, errorThrown) {
+					alert('An error has occurred while creating the sensor group template.');
+				});
+			}
+		} else {
+			alert('Please make sure to enter a valid Group Template ID (must be a number).')
+		}
+	});
+
+	// admin update templates available for tenant
+	$('#manage-tenant-form').on('submit', function() {
+		var form = $(this).closest('form');
+		var tenant = form.find('input[name="tenant_name"]').val();
+
+		// get sensor template
+		var templatelist = form.find('input[name="templatelist"]:checkbox:checked').map(function() {
+			return this.value;
+		}).get();
+		templatelist = templatelist.join(",");
+
+		// get sensor group template
+		var templategrouplist = form.find('input[name="templategrouplist"]:checkbox:checked').map(function() {
+			return this.value;
+		}).get();
+		templategrouplist = templategrouplist.join(",");
+
+		var postdata = {
+			'templates': templatelist,
+			'group_templates': templategrouplist
+		};
+
+		USER_DB.updateTemplates(tenant, postdata, function(data) {
+			if (data) {
+				window.location.reload();
+			} else {
+				alert('An error has occurred while updating the tenant ' + tenant);
+			}
+		});
 	});
 });

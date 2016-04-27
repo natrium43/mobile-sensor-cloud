@@ -10,7 +10,8 @@ var _GLOBAL = {
 	},
 
 	config: {
-		'db_server': 'http://127.0.0.1:3001'
+		'user_db': 'http://127.0.0.1:3001',
+		'sensor_db': 'http://127.0.0.1:3002'
 	}
 }
 

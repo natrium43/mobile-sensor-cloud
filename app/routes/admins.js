@@ -12,10 +12,8 @@ router.get('/admins/tenants', function(req, res, next) {
 	var sess = req.session;
 	var path = req.path;
 	if (!_GLOBAL.valid_session(sess, req, res)) { return; }
-
-	// get tenant info
 	request.get({
-		url: _GLOBAL.config.db_server + '/tenants?verbose=true',
+		url: _GLOBAL.config.user_db + '/tenants?verbose=true',
 		json: true
 	}, function(error, response, body) {
 		var render = {
@@ -39,12 +37,34 @@ router.get('/admins/templates', function(req, res, next) {
 	var sess = req.session;
 	var path = req.path;
 	if (!_GLOBAL.valid_session(sess, req, res)) { return; }
-	res.render(path.substring(1), {
-		render: {
-			title: 'Admin Dashboard',
-			session: sess,
-			section: 'templates'
+	request.get({
+		url: _GLOBAL.config.sensor_db + '/templatelist',
+		json: true
+	}, function(error, response, body) {
+		var render = {
+			render: {
+				title: 'Admin Dashboard',
+				session: sess,
+				section: 'templates',
+				response: {
+					template: [],
+					templategroup: []
+				}
+			}
 		}
+
+		if (!error && body) {
+			render['render']['response']['template'] = body.sort(sortByTemplateId);
+		}
+		request.get({
+			url: _GLOBAL.config.sensor_db + '/templategrouplist',
+			json: true
+		}, function(error, response, body) {
+			if (!error && body) {
+				render['render']['response']['templategroup'] = body.sort(sortByTemplateGroupId);
+			}
+			res.render(path.substring(1), render);
+		});
 	});
 });
 
@@ -73,5 +93,23 @@ router.get('/admins/resources', function(req, res, next) {
 		}
 	});
 });
+
+function sortByTemplateId(a, b) {
+	if (a.templateId < b.templateId)
+		return -1;
+	else if (a.templateId > b.templateId)
+		return 1;
+	else
+		return 0;
+}
+
+function sortByTemplateGroupId(a, b) {
+	if (a.templateGroupId < b.templateGroupId)
+		return -1;
+	else if (a.templateGroupId > b.templateGroupId)
+		return 1;
+	else
+		return 0;
+}
 
 module.exports = router;

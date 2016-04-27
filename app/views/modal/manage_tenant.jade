@@ -1,51 +1,59 @@
-.modal-dialog.modal-lg(data-tenant-id="#{render.query.tenant_id}")
-    .modal-content
-        form#create-tenant(onsubmit='return false;')
-            .modal-header
-                button.close(type='button' data-dismiss='modal' aria-label='Close')
-                    span(aria-hidden='true')
-                        | &times;
-                h4.modal-title
-                    i.fa.fa-user.fa-lg
-                        | &nbsp;
-                    | Manage Tenant&nbsp;
-                    span.label.label-default
-                        = render.query.tenant
-            .modal-body
-                .row
-                    .col-lg-5.col-md-5
-                        .panel.panel-default
-                            .panel-heading
-                                h5
-                                    | Available
-                            ul.list-group
-                                li.list-group-item
-                                    | Template 1
-                                li.list-group-item
-                                    | Template 2
-                                li.list-group-item
-                                    | Template 4
-                    .col-lg-2.col-md-2(style='margin-top: 50px;')
-                        button.btn.btn-success.btn-block
-                            i.fa.fa-arrow-right.fa-lg
-                        br
-                        button.btn.btn-danger.btn-block
-                            i.fa.fa-arrow-left.fa-lg
-                    .col-lg-5.col-md-5
-                        .panel.panel-default
-                            .panel-heading
-                                h5
-                                    | In Use
-                            ul.list-group
-                                li.list-group-item
-                                    | Template 3
-                                li.list-group-item
-                                    | Template 5
-                                li.list-group-item
-                                    | Template 6
-            .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal')
-                    | Close
-                button.btn.btn-primary(type='submit')
-                    | Save
-script(src='/javascripts/modal.js')
+extends _template
+
+block content
+    .modal-dialog
+        .modal-content
+            form#manage-tenant-form(onsubmit='return false;')
+                .modal-header
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true')
+                            | &times;
+                    h4.modal-title
+                        i.fa.fa-globe.fa-lg
+                            | &nbsp;
+                        | Manage Tenant&nbsp;
+                        span.label.label-default
+                            = render.response.tenant.name
+                .modal-body
+                    input(type="hidden", name="tenant_name", value="#{render.response.tenant.name}")
+                    .alert.alert-info
+                        i.fa.fa-info-circle.fa-lg
+                            | &nbsp;
+                        | Place a checkmark next to the template ID(s) available to this tenant.
+                    .row
+                        - var enabledTemplates = render.response.tenant.templates;
+                        - var enabledGroupTemplates = render.response.tenant.group_templates;
+                        .col-lg-6
+                            .panel.panel-default
+                                .panel-heading
+                                    | Sensor Templates
+                                ul.list-group
+                                    - for (var i = 0; i < render.response.templates.length; i++)
+                                        - var t = render.response.templates[i];
+                                        li.list-group-item.checkbox
+                                            label
+                                                - if (enabledTemplates.indexOf(t.templateId) > -1)
+                                                    input(type="checkbox", name="templatelist", value="#{t.templateId}", checked)
+                                                - else
+                                                    input(type="checkbox", name="templatelist", value="#{t.templateId}")
+                                                = t.templateId
+                        .col-lg-6
+                            .panel.panel-default
+                                .panel-heading
+                                    | Sensor Group Templates
+                                ul.list-group
+                                    - for (var i = 0; i < render.response.group_templates.length; i++)
+                                        - var t = render.response.group_templates[i];
+                                        li.list-group-item.checkbox
+                                            label
+                                                - if (enabledGroupTemplates.indexOf(t.templateGroupId) > -1)
+                                                    input(type="checkbox", name="templategrouplist", value="#{t.templateGroupId}", checked)
+                                                - else
+                                                    input(type="checkbox", name="templategrouplist", value="#{t.templateGroupId}")
+                                                = t.templateGroupId
+
+                .modal-footer
+                    button.btn.btn-default(type='button', data-dismiss='modal')
+                        | Close
+                    button.btn.btn-primary(type='submit')
+                        | Save

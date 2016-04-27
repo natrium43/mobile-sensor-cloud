@@ -1,60 +1,53 @@
-.modal-dialog
-    .modal-content
-        form#create-sensor-group-template.form-horizontal(onsubmit='return false;')
-            .modal-header
-                button.close(type='button' data-dismiss='modal' aria-label='Close')
-                    span(aria-hidden='true')
-                        | &times;
-                h4.modal-title
-                    i.fa.fa-pencil-square-o
-                    | &nbsp;
-                    - if (render.query.edit === 'true')
-                        | Edit Sensor Group Template
-                    - else
-                        | Create Sensor Group Template
-            .modal-body
-                - if (render.query.edit !== 'true')
-                    .alert.alert-info
-                        i.fa.fa-info-circle.fa-lg
-                        | &nbsp;To create a new sensor group template, please complete and submit this form.
-                .form-group
-                    label.control-label.col-sm-4
-                        | Template ID
-                    .col-sm-7
-                        input.form-control(name='template-id', placeholder='Enter Template ID')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Minimum Sample Period
-                    .col-sm-7
-                        input.form-control(name='min-sample-period', placeholder='Enter Minimum Sample Period')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Maximum Value
-                    .col-sm-7
-                        input.form-control(name='max-value', placeholder='Enter Maximum Value')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Minimum Value
-                    .col-sm-7
-                        input.form-control(name='min-value', placeholder='Enter Minimum Value')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Response Time
-                    .col-sm-7
-                        input.form-control(name='render-time', placeholder='Enter render Time')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Type
-                    .col-sm-7
-                        input.form-control(name='type', placeholder='Enter Type')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Available From
-                    .col-sm-7
-                        input.form-control(name='available-from', placeholder='Enter Available From')
-            .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal')
-                    | Cancel
-                button.btn.btn-primary(type='submit')
-                    | Submit
-script(src='/javascripts/modal.js')
+extends _template
+
+block content
+    .modal-dialog
+        .modal-content
+            form#create-sensor-group-template-form.form-horizontal(onsubmit='return false;')
+                .modal-header
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true')
+                            | &times;
+                    h4.modal-title
+                        i.fa.fa-pencil-square-o
+                        | &nbsp;
+                        - if (render.query.edit === 'true')
+                            | Edit Sensor Group Template
+                        - else
+                            | Create Sensor Group Template
+                .modal-body
+                    input(type="hidden", value="#{render.query.edit === 'true' ? 'edit' : ''}")
+                    - if (render.query.edit !== 'true')
+                        .alert.alert-info
+                            i.fa.fa-info-circle.fa-lg
+                            | &nbsp;To create a new sensor group template, please complete and submit this form.
+                    .form-group
+                        label.control-label.col-sm-4
+                            | Group Template ID
+                        .col-sm-7
+                            input.form-control(type="number", name='templateGroupId', placeholder='Enter Group Template ID')
+                    .form-group
+                        label.control-label.col-sm-4
+                            | Sensor Group
+                        .col-sm-7
+                            input.form-control(type="text", name='sensorGroup', placeholder='e.g. 0,2,4,6')
+                            .help-block
+                                i.fa.fa-info-circle
+                                | &nbsp;Provide a list of comma-separated Sensor ID(s).
+                    .form-group
+                        label.control-label.col-sm-4
+                            | Description
+                        .col-sm-7
+                            input.form-control(type="text", name='description', placeholder='Enter description')
+                    - if (render.query.edit !== 'true')
+                        .form-group
+                            label.control-label.col-sm-4
+                                | Available From
+                            .col-sm-7
+                                - var today = new Date().toUTCString();
+                                input.form-control(type="text", value="#{today}", readonly)
+                .modal-footer
+                    button.btn.btn-default(type='button', data-dismiss='modal')
+                        | Cancel
+                    button.btn.btn-primary(type='submit')
+                        | Submit

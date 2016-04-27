@@ -24,14 +24,14 @@ winston.add(winston.transports.File, {
 // default admin account
 var SYSADMIN = {
 	'account': 'admins',
-	'email': 'Administrator',
+	'email': 'admin@sjsu.edu',
 	'password': '$2a$10$LJsjVTbZYHt6HGMX8eD8XewxEtRAyMS.2Y7NKifi/CyZh/4lAqsYK' // welcome1
 };
 
 // NOTE: need to set the db host and add api user to db
 var connection = mysql.createConnection({
 	multipleStatements: true,
-    host : '172.31.208.23', //'172.31.208.23', //'10.0.0.6',
+    host : '10.0.0.6', //'172.31.208.23', //'10.0.0.6',
     user : 'api',
     password : 'root',
     database : 'user_management',
@@ -43,7 +43,7 @@ app.get('/tenants', function(req, res) {
 	var query = "SELECT * FROM tenants ORDER BY name";
 	// check if verbose params is set to true
 	if (params.verbose !== undefined && params.verbose == 'true') {
-		query = "SELECT tenants.tenant_id, tenants.name AS tenant, count(DISTINCT users.user_id) AS users, count(DISTINCT sub_id) AS subscriptions " +
+		query = "SELECT tenants.templates AS templates, tenants.group_templates AS group_templates, tenants.tenant_id, tenants.name AS tenant, count(DISTINCT users.user_id) AS users, count(DISTINCT sub_id) AS subscriptions " +
 				"FROM tenants " +
 				"LEFT JOIN users ON tenants.tenant_id=users.tenant_id " +
 				"LEFT JOIN subscriptions ON tenants.tenant_id=subscriptions.tenant_id " +
@@ -219,6 +219,23 @@ app.post('/owners', function(req, res) {
 	});
 });
 
+app.put('/tenants/:tenant/templates', function(req, res) {
+	var params = req.params;
+	var payload = req.body;
+	// build query
+	var query = "UPDATE tenants SET templates=" + _str(payload.templates) + ",group_templates=" + _str(payload.group_templates);
+	query += " WHERE tenant_id=(SELECT tenant_id FROM (SELECT * FROM tenants) AS temp WHERE temp.name=" + _str(params.tenant) + ")";
+	connection.query(query, function(err, rows) {
+		if (err) {
+			_ACCESS_LOG.error(req.method, req.url, err);
+			res.status(400).send();
+			return;
+		}
+		_ACCESS_LOG.success(req.method, req.url, 'updated templates for tenant ' + params.tenant);
+		res.status(204).send();
+	});
+});
+
 //login
 app.post('/authenticate', function(req, res) {
 	var payload = req.body;
@@ -259,12 +276,12 @@ app.post('/authenticate', function(req, res) {
 		}
 
 		_ACCESS_LOG.warning(req.method, req.url, 'authentication failed login does not exist.');
-		rest.status(400).send();
+		res.status(400).send();
 	});
 });
 
 app.listen(3001, function () {
-  console.log('Example app listening on port 3001!');
+  console.log('USER_DB listening on port 3001!');
 });
 
 // HELPER FUNCTIONS
@@ -307,5 +324,6 @@ POST /users 							- create new user
 POST /owners 							- create new owner
 POST /authenticate 						- authenticate user credentials
 PUT  /tenants/:tenant/users/:email 		- update user info
+PUT  /tenants/:tenant/templates         - update available templates and group_tempaltes for tenant
 PUT  /owners/:email 					- update owner info
 */

@@ -1,60 +1,68 @@
-.modal-dialog
-    .modal-content
-        form#create-sensor-template.form-horizontal(onsubmit='return false;')
-            .modal-header
-                button.close(type='button' data-dismiss='modal' aria-label='Close')
-                    span(aria-hidden='true')
-                        | &times;
-                h4.modal-title
-                    i.fa.fa-pencil-square-o
-                    | &nbsp;
-                    - if (render.query.edit === 'true')
-                        | Edit Sensor Template
-                    - else
-                        | Create Sensor Template
-            .modal-body
-                - if (render.query.edit !== 'true')
-                    .alert.alert-info
-                        i.fa.fa-info-circle.fa-lg
-                        | &nbsp;To create a new sensor template, please complete and submit this form.
-                .form-group
-                    label.control-label.col-sm-4
-                        | Template ID
-                    .col-sm-7
-                        input.form-control(name='template-id', placeholder='Enter Template ID')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Minimum Sample Period
-                    .col-sm-7
-                        input.form-control(name='min-sample-period', placeholder='Enter Minimum Sample Period')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Maximum Value
-                    .col-sm-7
-                        input.form-control(name='max-value', placeholder='Enter Maximum Value')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Minimum Value
-                    .col-sm-7
-                        input.form-control(name='min-value', placeholder='Enter Minimum Value')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Response Time
-                    .col-sm-7
-                        input.form-control(name='render-time', placeholder='Enter render Time')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Type
-                    .col-sm-7
-                        input.form-control(name='type', placeholder='Enter Type')
-                .form-group
-                    label.control-label.col-sm-4
-                        | Available From
-                    .col-sm-7
-                        input.form-control(name='available-from', placeholder='Enter Available From')
-            .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal')
-                    | Cancel
-                button.btn.btn-primary(type='submit')
-                    | Submit
-script(src='/javascripts/modal.js')
+extends _template
+
+block content
+    .modal-dialog
+        .modal-content
+            form#create-sensor-template-form.form-horizontal(onsubmit='return false;')
+                .modal-header
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true')
+                            | &times;
+                    h4.modal-title
+                        i.fa.fa-pencil-square-o
+                        | &nbsp;
+                        - if (render.edit)
+                            | Edit Sensor Template
+                        - else
+                            | Create Sensor Template
+                .modal-body
+                    input(type="hidden", value="#{render.edit ? 'edit' : ''}")
+                    - if (!render.edit)
+                        .alert.alert-info
+                            i.fa.fa-info-circle.fa-lg
+                            | &nbsp;To create a new sensor template, please complete and submit this form.
+                    .form-group
+                        label.control-label.col-sm-4
+                            | Template ID
+                        .col-sm-7
+                            - if (render.edit)
+                                input.form-control(type="number", name='templateId', placeholder='Enter Template ID', value="#{render.response.templateId}", readonly)
+                            - else
+                                input.form-control(type="number", name='templateId', placeholder='Enter Template ID')
+                    .form-group
+                        label.control-label.col-sm-4
+                            | Minimum Sample Period
+                        .col-sm-7
+                            input.form-control(type="text", name='minSamplePeriod', placeholder='Enter Minimum Sample Period', value="#{render.edit ? render.response.minSamplePeriod : ''}")
+                    .form-group
+                        label.control-label.col-sm-4
+                            | Maximum Value
+                        .col-sm-7
+                            input.form-control(type="number", name='maxValue', placeholder='Enter Maximum Value', value="#{render.edit ? render.response.maxValue : ''}")
+                    .form-group
+                        label.control-label.col-sm-4
+                            | Minimum Value
+                        .col-sm-7
+                            input.form-control(type="number", name='minValue', placeholder='Enter Minimum Value', value="#{render.edit ? render.response.maxValue : ''}")
+                    .form-group
+                        label.control-label.col-sm-4
+                            | Response Time
+                        .col-sm-7
+                            input.form-control(type="number", name='responseTime', placeholder='Enter response Time', value="#{render.edit ? render.response.responseTime : ''}")
+                    .form-group
+                        label.control-label.col-sm-4
+                            | Type
+                        .col-sm-7
+                            input.form-control(type="text", name='type', placeholder='Enter Type', value="#{render.edit && render.response.type ? render.response.type : ''}")
+                    - if (!render.edit)
+                        .form-group
+                            label.control-label.col-sm-4
+                                | Available From
+                            .col-sm-7
+                                - var today = new Date().toUTCString();
+                                input.form-control(type="text", value="#{today}", readonly)
+                .modal-footer
+                    button.btn.btn-default(type='button', data-dismiss='modal')
+                        | Cancel
+                    button.btn.btn-primary(type='submit', name="submit")
+                        | Submit

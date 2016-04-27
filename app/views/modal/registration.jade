@@ -1,89 +1,91 @@
-.modal-dialog.modal-lg
-    .modal-content
-        form#registration-form(onsubmit='return false;')
-            .modal-header
-                button.close(type='button' data-dismiss='modal' aria-label='Close')
-                    span(aria-hidden='true')
-                        | &times;
-                h4.modal-title
-                    i.fa.fa-user.fa-lg
-                        | &nbsp;
-                    | Sign Up
-            .modal-body
-                .alert.alert-info
-                    i.fa.fa-info-circle.fa-lg
-                        | &nbsp;
-                    | Please fill out the form to complete your registration.
-                    em
-                        | &nbsp;All fields are required.
-                .validation-error.alert.alert-danger(style='display: none;')
-                .row
-                    .container-fluid.col-lg-6.col-md-6
-                        h4
-                            | Account Information
-                        hr
-                        .form-group
-                            label
-                                | Account
-                            .help-block
-                                em
-                                    | Choose your account type.
-                            .radio
+extends _template
+
+block content
+    .modal-dialog.modal-lg
+        .modal-content
+            form#registration-form(onsubmit='return false;')
+                .modal-header
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true')
+                            | &times;
+                    h4.modal-title
+                        i.fa.fa-user.fa-lg
+                            | &nbsp;
+                        | Sign Up
+                .modal-body
+                    .alert.alert-info
+                        i.fa.fa-info-circle.fa-lg
+                            | &nbsp;
+                        | Please fill out the form to complete your registration.
+                        em
+                            | &nbsp;All fields are required.
+                    .validation-error.alert.alert-danger(style='display: none;')
+                    .row
+                        .container-fluid.col-lg-6.col-md-6
+                            h4
+                                | Account Information
+                            hr
+                            .form-group
                                 label
-                                    input(type='radio', name='account', value='owners', checked)
-                                    | Sensor Owner
-                            .radio
-                                label
-                                    input(type='radio', name='account', value='users')
-                                    | Sensor User
-                        .form-group
-                            .additional-fields(style='display: none;')
-                                label
-                                    | Tenant
+                                    | Account
                                 .help-block
                                     em
-                                        | Choose your tenant for the account.
-                                select.form-control.spacing(name='tenant')
-                                    option(disabled, selected)
-                                        | Choose a tenant
-                        .form-group
-                            label
-                                | Name
-                            input.form-control.spacing(type='text', name='firstname', placeholder='First Name')
-                            input.form-control.spacing(type='text', name='lastname', placeholder='Last Name')
-                        .additional-fields.form-group(style='display: none;')
-                            label
-                                | Address
-                            .help-block
-                                em
-                                    | Please enter your billing address.
-                            input.form-control.spacing(type='text', name='address1', placeholder='Address 1')
-                            input.form-control.spacing(type='text', name='address2', placeholder='Address 2')
-                    .container-fluid.col-lg-6.col-md-6
-                        h4
-                            | Login Information
-                        hr
-                        .form-group
-                            label
-                                | Email
-                            input.form-control.spacing(type='email', name='email', placeholder='Email Address')
-                            button.btn.btn-primary.btn-xs(type='button', name="email-availability")
-                                | Check Availability
-                            .results.pull-right(style='text-align: right;')
-                        .form-group
-                            label
-                                | Password
-                            input.form-control.spacing(type='password', name='pass1', placeholder='Password')
-                            .help-block
-                                em
-                                    | Minimum of 8 characters required.
-                        .form-group
-                            label
-                                | Confirm Password
-                            input.form-control(type='password', name='pass2', placeholder='Confirm Password')
-            .modal-footer
-                button.btn.btn-default(type='button', data-dismiss='modal')
-                    | Cancel
-                button.btn.btn-primary(type='submit')
-                    | Submit
-script(src='/javascripts/modal.js')
+                                        | Choose your account type.
+                                .radio
+                                    label
+                                        input(type='radio', name='account', value='owners', checked)
+                                        | Sensor Owner
+                                .radio
+                                    label
+                                        input(type='radio', name='account', value='users')
+                                        | Sensor User
+                            .form-group
+                                .additional-fields(style='display: none;')
+                                    label
+                                        | Tenant
+                                    .help-block
+                                        em
+                                            | Choose your tenant for the account.
+                                    select.form-control.spacing(name='tenant')
+                                        option(disabled, selected)
+                                            | Choose a tenant
+                            .form-group
+                                label
+                                    | Name
+                                input.form-control.spacing(type='text', name='firstname', placeholder='First Name')
+                                input.form-control.spacing(type='text', name='lastname', placeholder='Last Name')
+                            .additional-fields.form-group(style='display: none;')
+                                label
+                                    | Address
+                                .help-block
+                                    em
+                                        | Please enter your billing address.
+                                input.form-control.spacing(type='text', name='address1', placeholder='Address 1')
+                                input.form-control.spacing(type='text', name='address2', placeholder='Address 2')
+                        .container-fluid.col-lg-6.col-md-6
+                            h4
+                                | Login Information
+                            hr
+                            .form-group
+                                label
+                                    | Email
+                                input.form-control.spacing(type='email', name='email', placeholder='Email Address')
+                                button.btn.btn-primary.btn-xs(type='button', name="email-availability")
+                                    | Check Availability
+                                .results.pull-right(style='text-align: right;')
+                            .form-group
+                                label
+                                    | Password
+                                input.form-control.spacing(type='password', name='pass1', placeholder='Password')
+                                .help-block
+                                    em
+                                        | Minimum of 8 characters required.
+                            .form-group
+                                label
+                                    | Confirm Password
+                                input.form-control(type='password', name='pass2', placeholder='Confirm Password')
+                .modal-footer
+                    button.btn.btn-default(type='button', data-dismiss='modal')
+                        | Cancel
+                    button.btn.btn-primary(type='submit')
+                        | Submit

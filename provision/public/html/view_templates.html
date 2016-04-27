@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="templateApp">
+<head>
+    <meta charset="UTF-8">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/index_style.css">
+    <title>Sensor Cloud Application</title>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="../index.html">Home</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li><a href="#">View Templates</a></li>
+            <li><a href="register_sensor.html">Sensor Management</a></li>
+            <li><a href="/save/template">Add Temaplates</a></li>
+</nav>
+<div class="container" ng-controller="tempAppCtrl">
+    <h1>Templates Available</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Template ID:</th>
+            <th>Min sample Period</th>
+            <th>Maximum Value</th>
+            <th>Minimum Value</th>
+            <th>Response Time</th>
+            <th>Type</th>
+            <th>Available From</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="template in templatelist">
+            <td>{{template.templateId}}</td>
+            <td>{{template.minSamplePeriod}}</td>
+            <td>{{template.maxValue}}</td>
+            <td>{{template.minValue}}</td>
+            <td>{{template.responseTime}}</td>
+            <td>{{template.type}}</td>
+            <td>{{template.availableFrom}}</td>
+            <td><button class = "btn btn-danger" ng-click="remove(template._id)">Remove</button></td>
+            <td><button class = "btn btn-warning" ng-click="edit(template._id)">Edit</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+<script src="../controller/template_controller.js"></script>
+</body>
+
+</html>

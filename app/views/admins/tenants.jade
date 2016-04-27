@@ -1,4 +1,4 @@
-extends _main
+extends _template
 
 block right_pane
     .container-fluid
@@ -8,12 +8,19 @@ block right_pane
     br
     - var tenants = render.response;
     - for (var i = 0; i < tenants.length; i++)
+        - var t = tenants[i];
+        - var templateCount = 0;
+        - var groupTemplateCount = 0;
+        - if (t.templates)
+            - templateCount = t.templates.split(",").length
+        - if (t.group_templates)
+            - groupTemplateCount = t.group_templates.split(",").length
         .col-lg-4.col-md-6
             .panel.panel-default
                 .panel-heading.clearfix
                     .pull-left
                         - var tenant = tenants[i];
-                        a.manage-tenant(href='javascript:void(0);', data-tenant-id="#{tenant.tenant_id}", data-tenant="#{tenant.tenant}")
+                        a.manage-tenant(href='javascript:void(0);', data-tenant="#{tenant.tenant}")
                             span.label.label-default(style='font-size: 1em;')
                                 = tenant.tenant
                     //- .pull-right
@@ -31,12 +38,24 @@ block right_pane
                     .row
                         .col-xs-6
                             strong
-                                | # of Users:
+                                | Users:
                         .col-xs-6
                             = tenant.users
                     .row
                         .col-xs-6
                             strong
-                                | # of Subscriptions:
+                                | Subscriptions:
                         .col-xs-6
                             = tenant.subscriptions
+                    .row
+                        .col-xs-6
+                            strong
+                                | Sensor Templates:
+                        .col-xs-6
+                            = templateCount
+                    .row
+                        .col-xs-6
+                            strong
+                                | Sensor Group Templates:
+                        .col-xs-6
+                            = groupTemplateCount

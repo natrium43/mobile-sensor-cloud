@@ -1,4 +1,4 @@
-extends _main
+extends _template
 
 block right_pane
 	.panel.panel-default
@@ -38,31 +38,31 @@ block right_pane
 										th
 											| Type
 										th
-											| Availablility
+											| Available From
 										th
 											| Actions
 								tbody
-									- for (var i = 0; i < 12; i++)
+									- for (var i = 0; i < render.response.template.length; i++)
+										- var template = render.response.template[i];
 										tr
 											td
-												| 100#{i}
+												= template.templateId
 											td
-												| #{Math.floor((Math.random() * 10) + i)} ms
+												= template.minSamplePeriod
 											td
-												| #{Math.floor((Math.random() * 500) + 100)}
+												= template.maxValue
 											td
-												| #{Math.floor((Math.random() * 100) + 25)}
+												= template.minValue
 											td
-												| #{Math.floor((Math.random() * 30) + 5)} min
+												= template.responseTime
 											td
-												| Air flow
+												= template.type
 											td
-												- var datestr = '4/' + Math.floor((Math.random() * 30) + 2) + '/2016';
-												= (new Date(datestr)).toDateString()
+												= (new Date(template.availableFrom)).toUTCString()
 											td
-												button.edit-sensor-template.btn.btn-default.btn-sm(title='Edit template', data-template='sensor')
+												button.edit-sensor-template.btn.btn-default.btn-sm(title='Edit template', data-template="sensor", data-template-id="#{template.templateId}")
 													i.fa.fa-edit
-												button.delete-sensor-template.btn.btn-danger.btn-sm(title='Delete template', data-template='sensor')
+												button.delete-sensor-template.btn.btn-danger.btn-sm(title='Delete template', data-template="sensor", data-template-id="#{template.templateId}")
 													i.fa.fa-trash
 				#sensor-group-templates-tab.tab-pane.fade.in
 					br
@@ -71,30 +71,29 @@ block right_pane
 							thead
 								tr
 									th
-										| Group ID
+										| Group Template ID
 									th
-										| Template ID(s)
+										| Sensor Group
 									th
-										| Type
+										| Description
 									th
-										| Availablility
+										| Available From
 									th
 										| Actions
 							tbody
-								- for (var i = 0; i < 5; i++)
+								- for (var i = 0; i < render.response.templategroup.length; i++)
+									- var template = render.response.templategroup[i];
 									tr
 										td
-											| 200#{i}
+											= template.templateGroupId
 										td
-											- var sensor = Math.floor((Math.random() * 7) + 1);
-											| 100#{sensor}, 100#{sensor + Math.floor((Math.random() * 3) + 1)}
+											= template.sensorGroup.join(', ')
 										td
-											| Various
+											= template.description
 										td
-											- var datestr = '4/' + Math.floor((Math.random() * 30) + 2) + '/2016';
-											= (new Date(datestr)).toDateString()
+											= (new Date(template.availableFrom)).toUTCString()
 										td
-											button.edit-sensor-group-template.btn.btn-default.btn-sm(title='Edit template', data-template='sensor-group')
-												i.fa.fa-edit
-											button.delete-sensor-group-template.btn.btn-danger.btn-sm(title='Delete template', data-template='sensor-group')
+											//- button.edit-sensor-group-template.btn.btn-default.btn-sm(title='Edit template', data-template='sensor-group')
+											//- 	i.fa.fa-edit
+											button.delete-sensor-group-template.btn.btn-danger.btn-sm(title='Delete template', data-template='sensor-group', data-template-id="#{template.templateGroupId}")
 												i.fa.fa-trash

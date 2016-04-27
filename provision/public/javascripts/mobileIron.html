@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>This example calls a function which performs a calculation, and returns the result:</p>
+
+<p id="demo"></p>
+
+<script>
+    function findObjects(list, properties){
+
+        var keys = Object.keys(properties); // Object.keys() method returns an array of a given object's own enumerable properties
+        var result = list.filter(function(o, i) {
+            var i = 0;
+
+            while (i < keys.length && (keys[i] in o)) {
+                if (o[keys[i]] !== properties[keys[i]]) {
+                    return false;
+                } else {
+                    i++;
+                }
+            }
+
+            return true;
+        });
+
+        return result;
+    }
+
+    document.getElementById("demo").innerHTML = findObjects([
+                { fName: 'Akansha', lName: 'sharma', displayName: 'Akansha sharma' },
+                { fName: 'samir', lName: 'gandhi'}
+            ],
+            { fName: 'Akansha', lName: 'sharma' });
+    console.log(findObjects([
+                { fName: 'Akansha', lName: 'sharma', displayName: 'Akansha sharma' },
+                { fName: 'samir', lName: 'gandhi'}
+            ],
+            { fName: 'Akansha', lName: 'sharma' }));
+</script>
+
+</body>
+</html>
