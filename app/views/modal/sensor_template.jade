@@ -59,7 +59,7 @@ block content
                             label.control-label.col-sm-4
                                 | Available From
                             .col-sm-7
-                                - var today = new Date().toUTCString();
+                                - var today = new Date().toLocaleDateString() + " (UTC)";
                                 input.form-control(type="text", value="#{today}", readonly)
                 .modal-footer
                     button.btn.btn-default(type='button', data-dismiss='modal')

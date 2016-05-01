@@ -3,7 +3,6 @@ extends _template
 block content
     .modal-dialog
         .modal-content
-            form#manage-tenant-form(onsubmit='return false;')
                 .modal-header
                     button.close(type='button' data-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true')
@@ -15,45 +14,81 @@ block content
                         span.label.label-default
                             = render.response.tenant.name
                 .modal-body
-                    input(type="hidden", name="tenant_name", value="#{render.response.tenant.name}")
-                    .alert.alert-info
-                        i.fa.fa-info-circle.fa-lg
-                            | &nbsp;
-                        | Place a checkmark next to the template ID(s) available to this tenant.
-                    .row
-                        - var enabledTemplates = render.response.tenant.templates;
-                        - var enabledGroupTemplates = render.response.tenant.group_templates;
-                        .col-lg-6
+                    ul.nav.nav-tabs
+                        li.active
+                            a(href="#tenant-templates-pane", data-toggle='tab')
+                                | Templates
+                        li
+                            a(href="#tenant-users-pane", data-toggle='tab')
+                                | Users
+
+                    .tab-content
+                        #tenant-templates-pane.tab-pane.fade.in.active
+                            br
+                            form#manage-tenant-form(onsubmit='return false;')
+                                input(type="hidden", name="tenant_name", value="#{render.response.tenant.name}")
+                                .alert.alert-info
+                                    i.fa.fa-info-circle.fa-lg
+                                        | &nbsp;
+                                    | Place a checkmark next to the template ID(s) available to this tenant.
+                                .row
+                                    - var enabledTemplates = render.response.tenant.templates;
+                                    - var enabledGroupTemplates = render.response.tenant.group_templates;
+                                    .col-lg-6
+                                        .panel.panel-default
+                                            .panel-heading
+                                                | Sensor Templates
+                                            ul.list-group
+                                                - for (var i = 0; i < render.response.templates.length; i++)
+                                                    - var t = render.response.templates[i];
+                                                    li.list-group-item.checkbox
+                                                        label
+                                                            - if (enabledTemplates.indexOf(t.templateId) > -1)
+                                                                input(type="checkbox", name="templatelist", value="#{t.templateId}", checked)
+                                                            - else
+                                                                input(type="checkbox", name="templatelist", value="#{t.templateId}")
+                                                            = t.templateId
+                                    .col-lg-6
+                                        .panel.panel-default
+                                            .panel-heading
+                                                | Sensor Group Templates
+                                            ul.list-group
+                                                - for (var i = 0; i < render.response.group_templates.length; i++)
+                                                    - var t = render.response.group_templates[i];
+                                                    li.list-group-item.checkbox
+                                                        label
+                                                            - if (enabledGroupTemplates.indexOf(t.templateGroupId) > -1)
+                                                                input(type="checkbox", name="templategrouplist", value="#{t.templateGroupId}", checked)
+                                                            - else
+                                                                input(type="checkbox", name="templategrouplist", value="#{t.templateGroupId}")
+                                                            = t.templateGroupId
+                                    .container-fluid
+                                        button.btn.btn-primary.pull-right.spacing(type='submit')
+                                            | Save
+                                        button.btn.btn-default.pull-right.spacing(type='reset')
+                                            | Reset
+                        #tenant-users-pane.tab-pane.fade.in
+                            br
                             .panel.panel-default
                                 .panel-heading
-                                    | Sensor Templates
-                                ul.list-group
-                                    - for (var i = 0; i < render.response.templates.length; i++)
-                                        - var t = render.response.templates[i];
-                                        li.list-group-item.checkbox
-                                            label
-                                                - if (enabledTemplates.indexOf(t.templateId) > -1)
-                                                    input(type="checkbox", name="templatelist", value="#{t.templateId}", checked)
-                                                - else
-                                                    input(type="checkbox", name="templatelist", value="#{t.templateId}")
-                                                = t.templateId
-                        .col-lg-6
-                            .panel.panel-default
-                                .panel-heading
-                                    | Sensor Group Templates
-                                ul.list-group
-                                    - for (var i = 0; i < render.response.group_templates.length; i++)
-                                        - var t = render.response.group_templates[i];
-                                        li.list-group-item.checkbox
-                                            label
-                                                - if (enabledGroupTemplates.indexOf(t.templateGroupId) > -1)
-                                                    input(type="checkbox", name="templategrouplist", value="#{t.templateGroupId}", checked)
-                                                - else
-                                                    input(type="checkbox", name="templategrouplist", value="#{t.templateGroupId}")
-                                                = t.templateGroupId
+                                    | Tenant Users
+                                table.table.table-striped
+                                    thead
+                                        tr
+                                            th
+                                                | Email
+                                            th
+                                                | Date Registered
+                                    tbody
+                                        - for (var i = 0; i < render.response.tenant.users.length; i++)
+                                            - var user = render.response.tenant.users[i];
+                                            tr
+                                                td
+                                                    = user.email
+                                                td
+                                                    = new Date(user.created).toLocaleDateString() + " (UTC)"
+
 
                 .modal-footer
                     button.btn.btn-default(type='button', data-dismiss='modal')
                         | Close
-                    button.btn.btn-primary(type='submit')
-                        | Save

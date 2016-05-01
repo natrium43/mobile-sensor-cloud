@@ -22,6 +22,20 @@ $(function() {
 	$('#sign-up').on('click', function() {
 		// load registration form
 		$('#modal').load('/modal/registration', function() {
+			// load available tenants
+			var form = $('#registration-form');
+			var select = form.find('select[name="tenant"]');
+			select.html('<option disabled selected>Choose a tenant</option>');
+			$.get('/db/tenants', function(data) {
+				if (data) {
+					for (var i = 0; i < data.length; i++) {
+						select.append('<option value=' + data[i].tenant_id + '>' + data[i].name + '</option>');
+					}
+					select.prop('selectedIndex', (data.length > 0 ? 1 : 0));
+				}
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				console.log("Unable to retrieve tenants.");
+			});
 			$(this).modal('show');
 		});
 	});
@@ -37,7 +51,7 @@ $(function() {
 
 	$('.manage-tenant').on('click', function() {
 		$('#modal').load('/modal/manage_tenant/' + $(this).data('tenant'), function(response, status, xhr) {
-			if (xhr.status === REST.STATUS_OK) {
+			if (xhr.status === 200) {
 				$(this).modal('show');
 			} else {
 				alert('An error has occurred while retrieving tenant information.');
@@ -81,7 +95,7 @@ $(function() {
 			modalView = '/modal/sensor_template/' + id;
 		}
 		$('#modal').load(modalView, function(response, status, xhr) {
-			if (xhr.status === REST.STATUS_OK) {
+			if (xhr.status === 200) {
 				$(this).modal('show');
 			} else {
 				alert('An error has occurred while retrieving template id #' + id);
@@ -105,7 +119,7 @@ $(function() {
 	// sensor user
 	$('#new-sensor-request').on('click', function() {
 		$('#modal').load('/users/provision_sensor', function(response, status, xhr) {
-			if (xhr.status === REST.STATUS_OK) {
+			if (xhr.status === 200) {
 				$(this).modal('show');
 			} else {
 				alert('An error has occurred while retrieving sensor catalog.');
@@ -117,7 +131,7 @@ $(function() {
 		var email = $(this).data('email');
 		var tenant = $(this).data('tenant');
 		$('#modal').load('/modal/account', function() {
-			USER_DB.getUser(email, tenant, function(data) {
+			$.get('/db/tenants/' + tenant + '/users/' + email, function(data) {
 				var form = $('#my-account-form');
 				form.find('input[name="name"]').val(data.name);
 				form.find('textarea[name="address"]').val(data.address);
@@ -125,6 +139,8 @@ $(function() {
 				form.find('input[name="account"]').val('Sensor User');
 				form.find('input[name="tenant"]').val(tenant);
 				$('#modal').modal('show');
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while retrieving  user information.');
 			});
 		});
 	});

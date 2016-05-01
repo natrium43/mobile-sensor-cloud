@@ -13,30 +13,34 @@ $(function() {
 		var select = form.find('select[name="tenant"]');
 		if (account === 'users') {
 			select.html('<option disabled selected>Choose a tenant</option>');
-			USER_DB.getTenants(function(data){
+			$.get('/db/tenants', function(data) {
 				if (data) {
 					for (var i = 0; i < data.length; i++) {
 						select.append('<option value=' + data[i].tenant_id + '>' + data[i].name + '</option>');
 					}
 					select.prop('selectedIndex', (data.length > 0 ? 1 : 0));
 				}
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				console.log("Unable to retrieve tenants.");
 			});
 		}
 	}).on('click', 'button[name="email-availability"]', function() {
 		var form = $(this).closest('form');
 		var email = $(this).prev().val();
 		var results = $(this).next();
-		var account = form.find('input[name="account"]:checked').val();
-		var tenant = (account === 'users' ? form.find('select[name="tenant"] option:selected').text() : null);
-
+		//var account = form.find('input[name="account"]:checked').val();
+		//var tenant = (account === 'users' ? form.find('select[name="tenant"] option:selected').text() : null);
+		var tenant = form.find('select[name="tenant"] option:selected').text();
 		// check if email address is available
-		USER_DB.checkEmailAvailable(account, email, tenant, function(data) {
+		$.get('/db/checkemailavailable?email=' + email + '&tenant=' + tenant, function(data) {
 			if (data) {
 				results.removeClass('text-danger').addClass('text-success').html('Email address is <strong>available</strong>.');
 			} else {
 				results.removeClass('text-success').addClass('text-danger').html('Email address <strong>already exists</strong>.');
 			}
 			window.setTimeout(function(){ results.empty(); }, 3000);
+		}).error(function(jqXHR, textStatus, errorThrown) {
+			console.log("Unable to check email availability.");
 		});
 	}).on('submit', function() {
 		var form = $(this).closest('form');
@@ -93,13 +97,11 @@ $(function() {
 			postdata['tenant'] = parseInt(tenant); // use tenant_id not tenant name
 		}
 
-		USER_DB.addUser(account, postdata, function(data){
-			if (data) {
-				$('#modal').modal('hide');
-				alert('Account created successfully! Please log into your account.');
-			} else {
-				alert('An error has occurred while processing your account.  Please try again later.');
-			}
+		$.post('/db/users', postdata, function(data) {
+			$('#modal').modal('hide');
+			alert('Account created successfully! Please log into your account.');
+		}).error(function(jqXHR, textStatus, errorThrown) {
+			alert('An error has occurred while processing your account.  Please make sure the email address is available.');
 		});
 	});
 
@@ -109,24 +111,24 @@ $(function() {
 		var results = $(this).next();
 		var tenant = input.val();
 		if (tenant.length > 0) {
-			USER_DB.checkTenantAvailable(tenant, function(data) {
+			$.get('/db/checktenantavailable?tenant=' + tenant, function(data) {
 				if (data) {
 					results.removeClass('text-danger').addClass('text-success').html('Tenant name is <strong>available</strong>.');
 				} else {
 					results.removeClass('text-success').addClass('text-danger').html('Tenant name <strong>already exists</strong>.');
 				}
 				window.setTimeout(function(){ results.empty(); }, 3000);
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				console.log('Unable to retrieve tenant availability');
 			});
 		}
 	}).on('submit', function() {
 		var name = $(this).closest('form').find('input[name="tenant"]').val();
 		if (name.length > 0) {
-			USER_DB.addTenant({'name': name}, function(data) {
-				if (data) {
-					window.location.reload();
-				} else {
-					alert('An error has occurred while creating tenant.  Please make sure tenant name is available.');
-				}
+			$.post('/db/tenants', { 'name': name }, function(data) {
+				window.location.reload();
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while creating tenant.  Please make sure tenant name is available.');
 			});
 		}
 	});
@@ -142,13 +144,11 @@ $(function() {
 		if (data.name !== '' && data.address !== '') {
 			var email = form.find('input[name="email"]').val();
 			var tenant = form.find('input[name="tenant"]').val();
-			USER_DB.updateUser(email, tenant, data, function(data) {
-				if (data) {
-					$('#modal').modal('hide');
-					alert('Your account has been updated!');
-				} else {
-					alert('An error has occurred while updating your account.');
-				}
+			$.post('/db/tenants/' + tenant + '/users/' + email, data, function(data) {
+				$('#modal').modal('hide');
+				alert('Your account has been updated!');
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while updating your account.');
 			});
 		}
 	});
@@ -265,13 +265,10 @@ $(function() {
 			'templates': templatelist,
 			'group_templates': templategrouplist
 		};
-
-		USER_DB.updateTemplates(tenant, postdata, function(data) {
-			if (data) {
-				window.location.reload();
-			} else {
-				alert('An error has occurred while updating the tenant ' + tenant);
-			}
+		$.post('/db/tenants/' + tenant + '/templates', postdata, function(data) {
+			window.location.reload();
+		}).error(function(jqXHR, textStatus, errorThrown) {
+			alert('An error has occurred while updating the tenant ' + tenant);
 		});
 	});
 });

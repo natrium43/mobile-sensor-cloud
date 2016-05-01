@@ -1,5 +1,3 @@
-// Variables are passed to Views using the 2nd param for res.render()
-// In Views, we can access the variables using "response.{variable_name}"
 var _GLOBAL = require('../global');
 var express = require('express');
 var router = express.Router();
@@ -116,14 +114,23 @@ router.get('/modal/manage_tenant/:tenant', function(req, res, next) {
                     data['tenant'] = body;
                     data['tenant']['templates'] = templates;
                     data['tenant']['group_templates'] = gTemplates;
-					res.render('modal/manage_tenant', {
-						render: {
-							response: data
-						}
-					});
-					return;
 				}
-				res.status(500).send();
+				request.get({
+					url: _GLOBAL.config.user_db + '/tenants/' + params.tenant + '/users',
+					json: true,
+				}, function(error, response, body) {
+					if (!error && body) {
+	                    // get tenant users
+	                    data['tenant']['users'] = body;
+						res.render('modal/manage_tenant', {
+							render: {
+								response: data
+							}
+						});
+						return;
+					}
+					res.status(500).send();
+				});
 			});
 		});
 	});
@@ -193,6 +200,149 @@ router.post('/update/:category/:id', function(req, res, next) {
 			return;
 		}
 		res.status(400).send();
+	});
+});
+
+// get all tenants
+router.get('/db/tenants', function(req, res, next) {
+	request.get({
+		url: _GLOBAL.config.user_db + '/tenants',
+		json: true,
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 200) {
+			res.send(body);
+			return;
+		}
+		res.status(400).send(null);
+	});
+});
+
+// get specific tenant
+router.get('/db/tenants/:tenant', function(req, res, next) {
+	var params = req.params;
+	request.get({
+		url: _GLOBAL.config.user_db + '/tenants/' + params.tenant,
+		json: true,
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 200) {
+			res.send(body);
+			return;
+		}
+		res.status(400).send(null);
+	});
+});
+
+// check if email is available
+router.get('/db/checkemailavailable', function(req, res, next) {
+	var query = req.query;
+	//var url = _GLOBAL.config.user_db;
+	//url = (query.tenant == undefined ? url : url + '/tenants/' + query.tenant);
+	//url += '/' + query.account + '/' + query.email;
+	request.get({
+		url: _GLOBAL.config.user_db + '/tenants/' + query.tenant + '/users/' + query.email,
+		json: true,
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 200) {
+			res.send(!body);
+			return;
+		}
+		res.status(400).send(false);
+	});
+});
+
+// add a user
+router.post('/db/users', function(req, res, next) {
+	var payload = req.body;
+	request.post({
+		url: _GLOBAL.config.user_db + '/users',
+		json: true,
+		body: payload
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 201) {
+			res.status(201).send();
+			return;
+		}
+		res.status(400).send();
+	});
+});
+
+// add a tenant
+router.post('/db/tenants', function(req, res, next) {
+	var payload = req.body;
+	request.post({
+		url: _GLOBAL.config.user_db + '/tenants',
+		json: true,
+		body: payload
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 201) {
+			res.status(201).send();
+			return;
+		}
+		res.status(400).send();
+	});
+});
+
+// check if tenant is available
+router.get('/db/checktenantavailable', function(req, res, next) {
+	var query = req.query;
+	request.get({
+		url: _GLOBAL.config.user_db + '/tenants/' + query.tenant,
+		json: true,
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 200) {
+			res.send(!body);
+			return;
+		}
+		res.status(400).send(false);
+	});
+});
+
+// get a user
+router.get('/db/tenants/:tenant/users/:email', function(req, res, next) {
+	var params = req.params;
+	request.get({
+		url: _GLOBAL.config.user_db + '/tenants/' + params.tenant + '/users/' + params.email,
+		json: true,
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 200) {
+			res.send(body);
+			return;
+		}
+		res.status(400).send(null);
+	});
+});
+
+// update tenant user
+router.post('/db/tenants/:tenant/users/:email', function(req, res, next) {
+	var params = req.params;
+	var payload = req.body;
+	request.put({
+		url: _GLOBAL.config.user_db + '/tenants/' + params.tenant + '/users/' + params.email,
+		json: true,
+		body: payload
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 204) {
+			res.status(204).send();
+			return;
+		}
+		res.status(400).send(false);
+	});
+});
+
+// update tenant templates
+router.post('/db/tenants/:tenant/templates', function(req, res, next) {
+	var params = req.params;
+	var payload = req.body;
+	request.put({
+		url: _GLOBAL.config.user_db + '/tenants/' + params.tenant + '/templates',
+		json: true,
+		body: payload
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 204) {
+			res.status(204).send();
+			return;
+		}
+		res.status(400).send(false);
 	});
 });
 

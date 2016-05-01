@@ -58,7 +58,7 @@ block right_pane
 											td
 												= template.type
 											td
-												= (new Date(template.availableFrom)).toUTCString()
+												= (new Date(template.availableFrom)).toLocaleDateString() + " (UTC)"
 											td
 												button.edit-sensor-template.btn.btn-default.btn-sm(title='Edit template', data-template="sensor", data-template-id="#{template.templateId}")
 													i.fa.fa-edit
@@ -91,7 +91,7 @@ block right_pane
 										td
 											= template.description
 										td
-											= (new Date(template.availableFrom)).toUTCString()
+											= (new Date(template.availableFrom)).toLocaleDateString() + " (UTC)"
 										td
 											//- button.edit-sensor-group-template.btn.btn-default.btn-sm(title='Edit template', data-template='sensor-group')
 											//- 	i.fa.fa-edit

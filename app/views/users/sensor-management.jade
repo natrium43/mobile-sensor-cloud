@@ -47,7 +47,7 @@ block right_pane
 													| Air flow
 												td
 													- var rand = Math.floor((Math.random() * 15) + 1);
-														= (new Date('4/' + rand + '/2016')).toDateString()
+														= (new Date('4/' + rand + '/2016')).toLocaleDateString() + " (UTC)"
 
 						#sensor-group-templates-tab.tab-pane.fade.in
 							br

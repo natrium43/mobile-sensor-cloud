@@ -247,6 +247,7 @@ app.get('/register/sensor', function (req, res) {
 app.get('/save/template', function (req, res) {
   res.render('save_templates.html'); //CHANGE this to the right page.
 });
+
 //AWS Related functions
 AWS.config.update({region: 'us-west-1'});
 var ec2 = new AWS.EC2();
@@ -317,26 +318,26 @@ function startInstances() {
 startInstances();
 //Setting alarms using aws
 var paramsForAlarm = {
-  AlarmName: 'CPU_usage', /* required */
-  ComparisonOperator: 'GreaterThanOrEqualToThreshold', /* required */
-  EvaluationPeriods: 1, /* required */
-  MetricName: 'CPUUtilization', /* required */
-  Namespace: 'AWS/EC2', /* required */
-  Period: 60, /* required */
-  Statistic: 'Average', /* required */
-  Threshold: 1.0, /* required */
+  AlarmName: 'CPU_usage', // required
+  ComparisonOperator: 'GreaterThanOrEqualToThreshold', // required
+  EvaluationPeriods: 1, // required
+  MetricName: 'CPUUtilization', // required
+  Namespace: 'AWS/EC2',// required
+  Period: 60, // required
+  Statistic: 'Average', // required
+  Threshold: 1.0, // required
   ActionsEnabled: true || false,
   AlarmActions: [
     'arn:aws:swf:us-west-1:{7600-6036-2729}:action/actions/AWS_EC2.InstanceId.Stop/1.0',
-    /* more items */
+    // more items 
   ],
   AlarmDescription: 'CPU',
   Dimensions: [
     {
-      Name: 'InstanceId', /* required */
-      Value: 'i-0aed5bbf' /* required */
+      Name: 'InstanceId',// required
+      Value: 'i-0aed5bbf' // required
     },
-    /* more items */
+    // more items
   ],
   Unit: 'Percent'
   // Unit: 'Seconds | Microseconds | Milliseconds | Bytes | Kilobytes | Megabytes | Gigabytes | Terabytes | Bits | Kilobits | Megabits | Gigabits | Terabits | Percent | Count | Bytes/Second | Kilobytes/Second | Megabytes/Second | Gigabytes/Second | Terabytes/Second | Bits/Second | Kilobits/Second | Megabits/Second | Gigabits/Second | Terabits/Second | Count/Second | None'
@@ -430,5 +431,5 @@ function exitHandler(options, err) {
 process.on('exit', exitHandler.bind(null, {cleanup: true}));
 process.on('SIGINT', exitHandler.bind(null, {exit: true}));
 
-app.listen(3000);
-console.log("Server running at  http://localhost:3000/'");
+app.listen(3002);
+console.log("Server running at  http://localhost:3002/'");

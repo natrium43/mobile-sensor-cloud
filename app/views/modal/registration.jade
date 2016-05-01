@@ -28,19 +28,20 @@ block content
                             .form-group
                                 label
                                     | Account
-                                .help-block
-                                    em
-                                        | Choose your account type.
+                                //- .help-block
+                                //-     em
+                                //-         | Choose your account type.
+                                //- .radio
+                                //-     label
+                                //-         input(type='radio', name='account', value='owners', checked)
+                                //-         | Sensor Owner
                                 .radio
                                     label
-                                        input(type='radio', name='account', value='owners', checked)
-                                        | Sensor Owner
-                                .radio
-                                    label
-                                        input(type='radio', name='account', value='users')
+                                        input(type='radio', name='account', value='users', checked)
                                         | Sensor User
                             .form-group
-                                .additional-fields(style='display: none;')
+                                .additional-fields
+                                    //-(style='display: none;')
                                     label
                                         | Tenant
                                     .help-block
@@ -54,7 +55,8 @@ block content
                                     | Name
                                 input.form-control.spacing(type='text', name='firstname', placeholder='First Name')
                                 input.form-control.spacing(type='text', name='lastname', placeholder='Last Name')
-                            .additional-fields.form-group(style='display: none;')
+                            .additional-fields.form-group
+                                //-(style='display: none;')
                                 label
                                     | Address
                                 .help-block
