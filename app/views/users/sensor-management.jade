@@ -26,11 +26,13 @@ block right_pane
 											th
 												| Request ID
 											th
+												| Template ID
+											th
 												| Status
 											th
 												| Type
 											th
-												| Last Collection
+												| Provision Date
 									tbody
 										- for (var i = 0; i < 6; i++)
 											- var c = 'success';
@@ -38,6 +40,8 @@ block right_pane
 											- if ((i + rand) % 3 === 0)
 												- c = 'danger';
 											tr
+												td
+													| 100#{i}
 												td
 													| 100#{i}
 												td
@@ -58,7 +62,7 @@ block right_pane
 											th
 												| Request ID
 											th
-												| Sensor ID
+												| Template ID
 											th
 												| Type
 											th

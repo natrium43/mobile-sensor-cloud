@@ -24,8 +24,10 @@ block content
                             .form-group
                                 label.col-sm-2.control-label
                                     | ID
+                                    span.text-danger
+                                        | *
                                 .col-sm-9
-                                    input.form-control(type='number', name='id', placeholder='Sensor ID (Required)')
+                                    input.form-control(type='number', name='id', placeholder='Sensor ID')
                             .form-group
                                 label.col-sm-2.control-label
                                     | Format
@@ -35,7 +37,13 @@ block content
                                 label.col-sm-2.control-label
                                     | Type
                                 .col-sm-9
-                                    input.form-control(type='text', name='type', placeholder='Sensor Type')
+                                    select.form-control(name="type")
+                                        option(selected disabled)
+                                            | Select sensor type
+                                        option(value="Airflow")
+                                            | Airflow
+                                        option(value="Water")
+                                            | Water
                             .form-group 
                                 label.col-sm-2.control-label
                                     | Description

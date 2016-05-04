@@ -11,10 +11,14 @@ block right_pane
 				.panel(class="panel-#{c}", style='border-width: 2px;')
 					.panel-heading
 					.panel-body
-						- var frequency = Math.floor((Math.random() * 10) + 1);
 						.row
 							label.control-label.col-lg-6
 								| Request ID
+							.col-lg-6
+								| 100#{i}
+						.row
+							label.control-label.col-lg-6
+								| Template ID
 							.col-lg-6
 								| 100#{i}
 						.row
@@ -28,23 +32,16 @@ block right_pane
 								| Type
 							.col-lg-6
 								| Air flow
-						.row
-							label.control-label.col-lg-6
-								| Collection Frequency
-							.col-lg-6
-								= frequency
 						br
 						.row
 							.container-fluid
-								button.btn.btn-default.btn-sm.spacing.delete-user-sensor
-									i.fa.fa-trash
-									| &nbsp;Terminate
 								- var status = (c === 'danger' ? 'Enable' : 'Disable');
 								button.btn.btn-default.btn-sm.pull-right.spacing
 									i.fa.fa-power-off
 										| &nbsp;
 									= status
-								button.btn.btn-default.btn-sm.pull-right.spacing.edit-collection(data-requestid="100#{i}", data-frequency="#{frequency}")
-									i.fa.fa-cog
-									| &nbsp;Edit
+								button.btn.btn-default.btn-sm.pull-right.spacing.delete-user-sensor
+									i.fa.fa-trash
+									| &nbsp;Terminate
+								
 								

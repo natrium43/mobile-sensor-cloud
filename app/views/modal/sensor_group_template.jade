@@ -24,16 +24,22 @@ block content
                     .form-group
                         label.control-label.col-sm-4
                             | Group Template ID
+                            span.text-danger
+                                | *
                         .col-sm-7
                             input.form-control(type="number", name='templateGroupId', placeholder='Enter Group Template ID')
                     .form-group
                         label.control-label.col-sm-4
                             | Sensor Group
                         .col-sm-7
-                            input.form-control(type="text", name='sensorGroup', placeholder='e.g. 0,2,4,6')
                             .help-block
                                 i.fa.fa-info-circle
-                                | &nbsp;Provide a list of comma-separated Sensor ID(s).
+                                | &nbsp; Select all that apply.
+                            - for (var i = 0; i < render.response.length; i++)
+                                .checkbox
+                                    label
+                                        input(type="checkbox", value="#{render.response[i].id}", name="sensorGroup")
+                                        | Sensor ID##{render.response[i].id}
                     .form-group
                         label.control-label.col-sm-4
                             | Description

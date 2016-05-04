@@ -31,9 +31,9 @@ var SYSADMIN = {
 // NOTE: need to set the db host and add api user to db
 var connection = mysql.createConnection({
 	multipleStatements: true,
-    host : '10.0.0.6', //'172.31.208.23', //'10.0.0.6',
-    user : 'api',
-    password : 'root',
+    host : 'localhost', //'172.31.208.23', //'10.0.0.6',
+    user : 'root',
+    password : 'welcome1',
     database : 'user_management',
 });
 

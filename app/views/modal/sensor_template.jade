@@ -11,50 +11,81 @@ block content
                     h4.modal-title
                         i.fa.fa-pencil-square-o
                         | &nbsp;
-                        - if (render.edit)
+                        - if (render.query.edit)
                             | Edit Sensor Template
                         - else
                             | Create Sensor Template
                 .modal-body
-                    input(type="hidden", value="#{render.edit ? 'edit' : ''}")
-                    - if (!render.edit)
+                    input(type="hidden", value="#{render.query..edit ? 'edit' : ''}")
+                    - if (!render.query.edit)
                         .alert.alert-info
                             i.fa.fa-info-circle.fa-lg
                             | &nbsp;To create a new sensor template, please complete and submit this form.
                     .form-group
                         label.control-label.col-sm-4
                             | Template ID
+                            span.text-danger
+                                | *
                         .col-sm-7
-                            - if (render.edit)
+                            - if (render.query.edit)
                                 input.form-control(type="number", name='templateId', placeholder='Enter Template ID', value="#{render.response.templateId}", readonly)
                             - else
                                 input.form-control(type="number", name='templateId', placeholder='Enter Template ID')
                     .form-group
                         label.control-label.col-sm-4
+                            | Sensor ID
+                            span.text-danger
+                                | *
+                        .col-sm-7
+                            - if (render.query.edit)
+                                input.form-control(type="number", name='sensorId', value="#{}", readonly)
+                            - else
+                                select.form-control(name="sensorId")
+                                    option(selected disabled)
+                                        | Select available sensor ID
+                                    - for (var i = 0; i < render.response.length; i++)
+                                        option(value="#{render.response[i].id}")
+                                            = render.response[i].id
+                    .form-group
+                        label.control-label.col-sm-4
                             | Minimum Sample Period
                         .col-sm-7
-                            input.form-control(type="text", name='minSamplePeriod', placeholder='Enter Minimum Sample Period', value="#{render.edit ? render.response.minSamplePeriod : ''}")
+                            input.form-control(type="text", name='minSamplePeriod', placeholder='Enter Minimum Sample Period', value="#{render.query.edit ? render.response.minSamplePeriod : '1ms'}")
                     .form-group
                         label.control-label.col-sm-4
                             | Maximum Value
                         .col-sm-7
-                            input.form-control(type="number", name='maxValue', placeholder='Enter Maximum Value', value="#{render.edit ? render.response.maxValue : ''}")
+                            input.form-control(type="number", name='maxValue', placeholder='Enter Maximum Value', value="#{render.query.edit ? render.response.maxValue : '100'}")
                     .form-group
                         label.control-label.col-sm-4
                             | Minimum Value
                         .col-sm-7
-                            input.form-control(type="number", name='minValue', placeholder='Enter Minimum Value', value="#{render.edit ? render.response.maxValue : ''}")
+                            input.form-control(type="number", name='minValue', placeholder='Enter Minimum Value', value="#{render.query.edit ? render.response.maxValue : '0'}")
                     .form-group
                         label.control-label.col-sm-4
                             | Response Time
                         .col-sm-7
-                            input.form-control(type="number", name='responseTime', placeholder='Enter response Time', value="#{render.edit ? render.response.responseTime : ''}")
+                            input.form-control(type="number", name='responseTime', placeholder='Enter response Time', value="#{render.query.edit ? render.response.responseTime : ''}")
                     .form-group
                         label.control-label.col-sm-4
                             | Type
                         .col-sm-7
-                            input.form-control(type="text", name='type', placeholder='Enter Type', value="#{render.edit && render.response.type ? render.response.type : ''}")
-                    - if (!render.edit)
+                            select.form-control(name="type")
+                                option(selected disabled)
+                                    | Select sensor type
+                                - if (render.query.edit && render.response.type && render.response.type === 'Airflow')
+                                    option(value="Airflow" selected)
+                                        | Airflow
+                                - else
+                                    option(value="Airflow")
+                                        | Airflow
+                                - if (render.query.edit && render.response.type && render.response.type === 'Water')
+                                    option(value="Water" selected)
+                                        | Water
+                                - else
+                                    option(value="Water")
+                                        | Water
+                    - if (!render.query.edit)
                         .form-group
                             label.control-label.col-sm-4
                                 | Available From

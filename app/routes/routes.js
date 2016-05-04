@@ -72,17 +72,6 @@ router.post('/login/authenticate', function(req, res, next) {
 	});
 });
 
-router.get('/modal/:view', function(req, res, next) {
-	var query = req.query;
-	var payload = req.body;
-	var view = 'modal/' + req.params.view;
-	res.render(view, {
-		render: {
-			query: query
-		}
-	});
-});
-
 router.get('/modal/manage_tenant/:tenant', function(req, res, next) {
 	var params = req.params;
 	var data = {};
@@ -136,6 +125,56 @@ router.get('/modal/manage_tenant/:tenant', function(req, res, next) {
 	});
 });
 
+router.get('/modal/sensor_group_template', function(req, res, next) {
+	var params = req.params;
+	var query = req.query;
+	request.get({
+		url: _GLOBAL.config.sensor_db + '/sensorlist',
+		json: true,
+	}, function(error, response, body) {
+		if (!error && body) {
+			res.render('modal/sensor_group_template', {
+				render: {
+					query: query,
+					response: body
+				}
+			});
+			return;
+		}
+		res.status(500).send();
+	});
+});
+
+router.get('/modal/sensor_template', function(req, res, next) {
+	var params = req.params;
+	var query = req.query;
+	request.get({
+		url: _GLOBAL.config.sensor_db + '/sensorlist',
+		json: true,
+	}, function(error, response, body) {
+		if (!error && body) {
+			// get available sensors only
+			var fixedBody = [];
+			for (var i = 0; i < body.length; i++) {
+				if (!body[i].hasOwnProperty('templateId')) {
+					fixedBody.push(body[i]);
+				}
+			}
+
+			res.render('modal/sensor_template', {
+				render: {
+					query: {
+						edit: query.edit === 'true' ? true : false 
+					},
+					response: fixedBody
+				}
+			});
+			return;
+		}
+		res.status(500).send();
+	});
+});
+
 router.get('/modal/sensor_template/:template_id', function(req, res, next) {
 	var params = req.params;
 	request.get({
@@ -145,7 +184,9 @@ router.get('/modal/sensor_template/:template_id', function(req, res, next) {
 		if (!error && body) {
 			res.render('modal/sensor_template', {
 				render: {
-					edit: true,
+					query: {
+						edit: true
+					},
 					response: body
 				}
 			});
@@ -343,6 +384,18 @@ router.post('/db/tenants/:tenant/templates', function(req, res, next) {
 			return;
 		}
 		res.status(400).send(false);
+	});
+});
+
+// default modal route if no other route is specified
+router.get('/modal/:view', function(req, res, next) {
+	var query = req.query;
+	var payload = req.body;
+	var view = 'modal/' + req.params.view;
+	res.render(view, {
+		render: {
+			query: query
+		}
 	});
 });
 

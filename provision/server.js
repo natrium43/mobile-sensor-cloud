@@ -1,9 +1,11 @@
 // Code to communicate with Monitoring server
+/*
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:4000', { reconnect: true });
 socket.on('connect', function(socket) {
   console.log('Connected to Monitoring Server!');
 });
+*/
 
 var express = require('express');
 var app = express();
@@ -220,6 +222,7 @@ app.put('/templatelist/:id', function (req, res) {
 
 })
 
+/*
 var healthResObj = {};
 
 socket.on('reply', function (data) {
@@ -430,6 +433,6 @@ function exitHandler(options, err) {
 }
 process.on('exit', exitHandler.bind(null, {cleanup: true}));
 process.on('SIGINT', exitHandler.bind(null, {exit: true}));
-
+*/
 app.listen(3002);
 console.log("Server running at  http://localhost:3002/'");

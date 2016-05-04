@@ -214,18 +214,17 @@ $(function() {
 		var form = $(this).closest('form');
 		var elems = form.serializeArray();
 		var postdata = {};
+		postdata['sensorGroup'] = [];
 		var val;
 		for(var i = 0; i < elems.length; i++) {
 			val = $.trim(elems[i].value);
 			if (val.length > 0) {
 				if (elems[i].name === 'sensorGroup') {
-					// convert comma-separated list to array of integers
-					postdata[elems[i].name] = val.replace(/ /g, '').split(",").map(function(v) { return parseInt(v); });
+					// create array of integer for sensor group
+					postdata['sensorGroup'].push(parseInt(val));
 				} else {
 					postdata[elems[i].name] = val;
 				}
-			} else if (elems[i].name === 'sensorGroup') {
-				postdata[elems[i].name] = [];
 			}
 		}
 		postdata['templateGroupId'] = parseInt(postdata['templateGroupId']);
