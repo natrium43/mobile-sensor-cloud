@@ -153,10 +153,32 @@ $(function() {
 		});
 	});
 
-	$('.delete-user-sensor').on('click', function() {
+	// (USER) terminate a sensor
+	$('.terminate-sensor').on('click', function() {
 		var r = confirm('Are you sure you want to terminate this sensor?');
 		if (r) {
-			window.location.reload();
+			var requestId = $(this).data('request-id');
+
+			$.post('/subscriptions/terminate', {'request_id': requestId}, function(data) {
+				alert("Your sensor object request ID#" + requestId + " has been terminated.");
+				window.location.reload();
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while terminating your sensor object.');
+			});
+		}
+	});
+
+	// (USER) update sensor status
+	$('.control-sensor').on('click', function() {
+		var action = $(this).data('action');
+		var requestId = $(this).data('request-id');
+		var r = confirm('Are you sure you want to ' + action + ' the request ID#' + requestId + '?');
+		if (r) {
+			$.post('/subscriptions/' + requestId + '/' + (action === 'Disable' ? 'disable' : 'enable'),{}, function(data) {
+				window.location.reload();
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while processing your action.');
+			});
 		}
 	});
 });

@@ -55,7 +55,7 @@ router.post('/login/authenticate', function(req, res, next) {
 			if (postData.account === 'users') {
 				sess.tenant = postData.tenant;
 				sess.tenant_id = body.tenant_id;
-				sess.id = body.user_id;
+				sess.user_id = body.user_id;
 				sess.address = body.address;
 			}
 			

@@ -12,12 +12,42 @@ router.get('/users/sensor-management', function(req, res, next) {
 	var sess = req.session;
 	var path = req.path;
 	if (!_GLOBAL.valid_session(sess, req, res)) { return; }
-	res.render(path.substring(1), {
-		render: {
-			title: 'User Dashboard',
-			session: sess,
-			section: 'sensor-management'
+	var render = {
+		title: 'User Dashboard',
+		session: sess,
+		section: 'sensor-management',
+		response: {
+			'active_subscriptions': [],
+			'terminated_subscriptions': []
 		}
+	};
+	request.get({
+		url: _GLOBAL.config.user_db + '/tenants/' + sess.tenant + '/users/' + sess.email + '/subscriptions/active',
+		json: true,
+	}, function(error, response, body) {
+		if (error) {
+			res.status(400).send();
+			return;
+		}
+
+		render['response']['active_subscriptions'] = body;
+		// to-do: get status from backend
+
+		request.get({
+			url: _GLOBAL.config.user_db + '/tenants/' + sess.tenant + '/users/' + sess.email + '/subscriptions/terminated',
+			json: true,
+		}, function(error, response, body) {
+			if (error) {
+				res.status(400).send();
+				return;
+			}
+
+			render['response']['terminated_subscriptions'] = body;
+			// to-do: get status from backend
+			res.render(path.substring(1), {
+				render: render
+			});
+		});
 	});
 });
 
@@ -25,12 +55,28 @@ router.get('/users/sensor-controller', function(req, res, next) {
 	var sess = req.session;
 	var path = req.path;
 	if (!_GLOBAL.valid_session(sess, req, res)) { return; }
-	res.render(path.substring(1), {
-		render: {
-			title: 'User Dashboard',
-			session: sess,
-			section: 'sensor-controller'
+	var render = {
+		title: 'User Dashboard',
+		session: sess,
+		section: 'sensor-controller',
+		response: {
+			'active_subscriptions': []
 		}
+	};
+	request.get({
+		url: _GLOBAL.config.user_db + '/tenants/' + sess.tenant + '/users/' + sess.email + '/subscriptions/active',
+		json: true,
+	}, function(error, response, body) {
+		if (error) {
+			res.status(400).send();
+			return;
+		}
+		render['response']['active_subscriptions'] = body;
+		// to-do: get status from backend
+		res.render(path.substring(1), {
+			render: render
+		});
+		
 	});
 });
 
@@ -122,10 +168,11 @@ router.get('/users/provision_sensor', function(req, res, next) {
                     		data['group_templates'].push(templategrouplist[i]);
                     	}
                     }
-                    console.log(data);
+                    console.log(sess);
 					res.render('modal/provision_sensor', {
 						render: {
-							response: data
+							response: data,
+							session: sess
 						}
 					});
 					return;
@@ -136,5 +183,42 @@ router.get('/users/provision_sensor', function(req, res, next) {
 	});
 });
 
+// make POST call to users_id rest api to create subscription
+router.post('/subscriptions', function(req, res, next) {
+	var payload = req.body;
+	request.post({
+		url: _GLOBAL.config.user_db + '/subscriptions',
+		json: true,
+		body: payload
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 201) {
+			res.status(201).send();
+			return;
+		}
+		res.status(400).send();
+	});
+});
+
+// make POST call to users_id rest api to create subscription
+router.post('/subscriptions/terminate', function(req, res, next) {
+	var payload = req.body;
+	request.put({
+		url: _GLOBAL.config.user_db + '/subscriptions/' + payload.request_id + '/terminate',
+		json: true
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 204) {
+			res.status(204).send();
+			return;
+		}
+		res.status(400).send();
+	});
+});
+
+// control sensor state
+// action can be "enable" or "disable"
+router.post('/subscriptions/:request_id/:action', function(req, res, next) {
+	var params = req.params;
+	res.send();
+});
 
 module.exports = router;

@@ -2,11 +2,9 @@ extends _template
 
 block right_pane
 	.container-fluid
-		- for (var i = 0; i < 6; i++)
+		- for (var i = 0; i < render.response.active_subscriptions.length; i++)
+			- var sub = render.response.active_subscriptions[i];
 			- var c = 'success';
-			- var rand = parseInt(Math.floor((Math.random() * 10) + 1));
-			- if ((i + rand) % 3 === 0)
-				- c = 'danger';
 			.col-lg-4.col-md-4.col-sm-6
 				.panel(class="panel-#{c}", style='border-width: 2px;')
 					.panel-heading
@@ -15,12 +13,12 @@ block right_pane
 							label.control-label.col-lg-6
 								| Request ID
 							.col-lg-6
-								| 100#{i}
+								= sub.request_id
 						.row
 							label.control-label.col-lg-6
 								| Template ID
 							.col-lg-6
-								| 100#{i}
+								= sub.template_id
 						.row
 							label.control-label.col-lg-6
 								| Status
@@ -36,12 +34,11 @@ block right_pane
 						.row
 							.container-fluid
 								- var status = (c === 'danger' ? 'Enable' : 'Disable');
-								button.btn.btn-default.btn-sm.pull-right.spacing
+								button.control-sensor.btn.btn-default.btn-sm.pull-right.spacing(data-request-id="#{ sub.request_id }", data-action="#{ status }")
 									i.fa.fa-power-off
 										| &nbsp;
 									= status
-								button.btn.btn-default.btn-sm.pull-right.spacing.delete-user-sensor
+								button.terminate-sensor.btn.btn-default.btn-sm.pull-right.spacing(data-request-id="#{ sub.request_id }")
 									i.fa.fa-trash
 									| &nbsp;Terminate
-								
 								

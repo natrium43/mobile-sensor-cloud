@@ -51,7 +51,7 @@ block content
                                                 = t.type
                                         .row
                                             .container-fluid
-                                                button.btn.btn-primary.btn-block
+                                                button.provision-sensor.btn.btn-primary.btn-block(data-user-id="#{ render.session.user_id }", data-tenant-id="#{ render.session.tenant_id }", data-template-id="#{ t.templateId }", data-template-type="templateId")
                                                     | Request
                         - for (var i = 0; i < render.response.group_templates.length; i++)
                             - var t = render.response.group_templates[i];
@@ -90,7 +90,7 @@ block content
                                                 | &nbsp;
                                         .row
                                             .container-fluid
-                                                button.btn.btn-primary.btn-block
+                                                button.provision-sensor.btn.btn-primary.btn-block(data-user-id="#{ render.session.user_id }", data-tenant-id="#{ render.session.tenant_id }", data-template-id="#{ t.templateGroupId }", data-template-type="templateGroupId")
                                                     | Request
                 .modal-footer
                     button.btn.btn-default(type='button', data-dismiss='modal')

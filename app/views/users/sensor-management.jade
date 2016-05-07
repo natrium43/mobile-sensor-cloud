@@ -34,24 +34,21 @@ block right_pane
 											th
 												| Provision Date
 									tbody
-										- for (var i = 0; i < 6; i++)
-											- var c = 'success';
-											- var rand = parseInt(Math.floor((Math.random() * 10) + 1));
-											- if ((i + rand) % 3 === 0)
-												- c = 'danger';
+										- for (var i = 0; i < render.response.active_subscriptions.length; i++)
+											- var sub = render.response.active_subscriptions[i];
 											tr
 												td
-													| 100#{i}
+													= sub.request_id
 												td
-													| 100#{i}
+													= sub.template_id
 												td
-													span.label(class="label-#{c}")
-														= (c === 'success' ? 'Active' : 'Inactive')
+													span.label(class="label-success")
+														| Active
 												td
 													| Air flow
 												td
 													- var rand = Math.floor((Math.random() * 15) + 1);
-														= (new Date('4/' + rand + '/2016')).toLocaleDateString() + " (UTC)"
+														= (new Date(sub.created)).toLocaleDateString() + " (UTC)"
 
 						#sensor-group-templates-tab.tab-pane.fade.in
 							br
@@ -70,17 +67,18 @@ block right_pane
 											th
 												| Terminate Date
 									tbody
-										- for (var i = 0; i < 10; i++)
-											- var rand = Math.floor((Math.random() * 15) + 1);
-											- var rand2 = parseInt(rand) + parseInt(Math.floor((Math.random() * 15) + 1));
+										- for (var i = 0; i < render.response.terminated_subscriptions.length; i++)
+											- var sub = render.response.terminated_subscriptions[i];
 											tr
 												td
-													| 100#{i}
+													= sub.request_id
 												td
-													| 200#{i}
+													= sub.template_id
 												td
 													| Air flow
 												td
-													= (new Date('4/' + rand + '/2016')).toDateString()
+													- var rand = Math.floor((Math.random() * 15) + 1);
+														= (new Date(sub.created)).toLocaleDateString() + " (UTC)"
 												td
-													= (new Date('4/' + rand2 + '/2016')).toDateString()
+													- var rand = Math.floor((Math.random() * 15) + 1);
+														= (new Date(sub.destroyed)).toLocaleDateString() + " (UTC)"

@@ -270,4 +270,29 @@ $(function() {
 			alert('An error has occurred while updating the tenant ' + tenant);
 		});
 	});
+
+	// (USER) provision sensor template
+	$('.provision-sensor').on('click', function() {
+		var r = confirm('You are about to provision a new sensor object.  Please confirm this action to continue.');
+		if (r) {
+			var templateType = $(this).data('template-type');
+			var userId = $(this).data('user-id');
+			var tenantId = $(this).data('tenant-id');
+			var templateId = $(this).data('template-id');
+
+			var postdata = {
+				'user_id': userId,
+				'tenant_id': tenantId,
+				'template_type': templateType
+			};
+			postdata[templateType] = templateId;
+			
+			$.post('/subscriptions', postdata, function(data) {
+				alert('Successfully provisioned sensor request!');
+				window.location.reload();
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while provision then sensor request.');
+			});
+		}
+	});
 });

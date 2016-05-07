@@ -5,11 +5,13 @@ var cors = require('cors');
 var winston = require('winston');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');  // use for encryption
+var sensor_logger = require('./routes/logger');
 
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
+app.use('/', sensor_logger);
 
 // logger
 winston.add(winston.transports.File, {
@@ -43,7 +45,7 @@ app.get('/tenants', function(req, res) {
 	var query = "SELECT * FROM tenants ORDER BY name";
 	// check if verbose params is set to true
 	if (params.verbose !== undefined && params.verbose == 'true') {
-		query = "SELECT tenants.templates AS templates, tenants.group_templates AS group_templates, tenants.tenant_id, tenants.name AS tenant, count(DISTINCT users.user_id) AS users, count(DISTINCT sub_id) AS subscriptions " +
+		query = "SELECT tenants.templates AS templates, tenants.group_templates AS group_templates, tenants.tenant_id, tenants.name AS tenant, count(DISTINCT users.user_id) AS users, count(DISTINCT request_id) AS subscriptions " +
 				"FROM tenants " +
 				"LEFT JOIN users ON tenants.tenant_id=users.tenant_id " +
 				"LEFT JOIN subscriptions ON tenants.tenant_id=subscriptions.tenant_id " +
@@ -280,6 +282,92 @@ app.post('/authenticate', function(req, res) {
 	});
 });
 
+// create new subscription
+app.post('/subscriptions', function(req, res) {
+	var payload = req.body;
+	var templateType = payload.template_type;
+	var query = "INSERT INTO subscriptions (user_id, template_id, tenant_id) VALUES " +
+				"(" + parseInt(payload.user_id) + "," + parseInt(templateType === 'templateId' ? payload.templateId : payload.templateGroupId) + "," +
+				parseInt(payload.tenant_id) + "); SELECT LAST_INSERT_ID() AS request_id;";
+	connection.query(query, function(err, rows) {
+		if (err) {
+			_ACCESS_LOG.error(req.method, req.url, err);
+			res.status(400).send();
+			return;
+		}
+
+		if (templateType === 'templateId') {
+			// use backend to provision
+		} else if (templateType === 'templateGroupId') {
+			// use backend to provision
+		}
+
+		// if provision was successful, send back request_id successful
+		// else update database with subscription terminated
+
+
+		_ACCESS_LOG.success(req.method, req.url, 'created subscription for ' + payload.email);
+		res.status(201).send(rows[0]);
+	});
+});
+
+// terminate subscription
+app.put('/subscriptions/:request_id/terminate', function(req, res) {
+	var params = req.params;
+
+	// perform terminate sensor using backend API
+	// on success, update subscription table
+
+	// build query
+	var query = "UPDATE subscriptions SET status='terminated', destroyed=current_timestamp WHERE request_id=" + parseInt(params.request_id);
+	connection.query(query, function(err, rows) {
+		if (err) {
+			_ACCESS_LOG.error(req.method, req.url, err);
+			res.status(400).send();
+			return;
+		}
+
+		_ACCESS_LOG.success(req.method, req.url, 'updated subscription status to terminated for ' + params.request_id);
+		res.status(204).send();
+	});
+});
+
+// get active subscriptions
+app.get('/tenants/:tenant/users/:email/subscriptions/active', function(req, res) {
+	var params = req.params;
+	var query = "SELECT users.email, tenants.name AS tenant_name, request_id, template_id, subscriptions.created " +
+				"FROM subscriptions LEFT JOIN users ON subscriptions.user_id=users.user_id " +
+				"LEFT JOIN tenants ON subscriptions.tenant_id=tenants.tenant_id " +
+				"WHERE subscriptions.status='active' AND users.email=" + _str(params.email) + " AND tenants.name=" + _str(params.tenant);
+	connection.query(query, function(err, rows) {
+		if (err) {
+			_ACCESS_LOG.error(req.method, req.url, err);
+			res.status(400).send();
+			return;
+		}
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows));
+		res.send(rows);
+	});
+});
+
+// get terminated subscriptions
+app.get('/tenants/:tenant/users/:email/subscriptions/terminated', function(req, res) {
+	var params = req.params;
+	var query = "SELECT users.email, tenants.name AS tenant_name, request_id, template_id, subscriptions.created, subscriptions.destroyed " +
+				"FROM subscriptions LEFT JOIN users ON subscriptions.user_id=users.user_id " +
+				"LEFT JOIN tenants ON subscriptions.tenant_id=tenants.tenant_id " +
+				"WHERE subscriptions.status='terminated' AND users.email=" + _str(params.email) + " AND tenants.name=" + _str(params.tenant);
+	connection.query(query, function(err, rows) {
+		if (err) {
+			_ACCESS_LOG.error(req.method, req.url, err);
+			res.status(400).send();
+			return;
+		}
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows));
+		res.send(rows);
+	});
+});
+
 app.listen(3001, function () {
   console.log('USER_DB listening on port 3001!');
 });
@@ -326,4 +414,8 @@ POST /authenticate 						- authenticate user credentials
 PUT  /tenants/:tenant/users/:email 		- update user info
 PUT  /tenants/:tenant/templates         - update available templates and group_tempaltes for tenant
 PUT  /owners/:email 					- update owner info
+POST /subscriptions						- create subscription
+PUT  /subscriptions/:request_id/terminate	- terminate subscription
+GET  /tenants/:tenant/users/:email/subscriptions/active - get all active subscriptions for tenant user
+GET  /tenants/:tenant/users/:email/subscriptions/terminated - get all terminated subscriptions for tenant user
 */
