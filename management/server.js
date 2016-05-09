@@ -5,13 +5,11 @@ var cors = require('cors');
 var winston = require('winston');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt');  // use for encryption
-var sensor_logger = require('./routes/logger');
 
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
-app.use('/', sensor_logger);
 
 // logger
 winston.add(winston.transports.File, {
@@ -33,7 +31,7 @@ var SYSADMIN = {
 // NOTE: need to set the db host and add api user to db
 var connection = mysql.createConnection({
 	multipleStatements: true,
-    host : 'localhost', //'172.31.208.23', //'10.0.0.6',
+    host : 'localhost',
     user : 'root',
     password : 'welcome1',
     database : 'user_management',

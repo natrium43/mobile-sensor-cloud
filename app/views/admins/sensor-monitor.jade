@@ -1,12 +1,46 @@
 extends _template
 
 block right_pane
-	- for (var i = 0; i < 2; i++)
-		.col-lg-6.col-md-12
-			.panel.panel-default
-				.panel-heading
-				.panel-body(style='height:200px;')
-	- for (var i = 0; i < 8; i++)
-		.col-lg-3.col-md-4.col-sm-6
-			.panel.panel-default
-				.panel-body(style='height:200px;')
+	- for (var i = 0; i < render.response.length; i++)
+		- var sensor = render.response[i];
+		.col-lg-12
+			.panel.panel-primary
+				.panel-heading(style="font-size: 1.2em; font-weight: bold;")
+					i.fa.fa-map-marker
+						| &nbsp;
+					| Sensor #{sensor.id}
+					span(style="font-weight: normal")
+						| &nbsp;Event Log
+				.table-responsive
+					table.table.table-striped
+						thead
+							tr
+								th
+									| Date
+								th
+									| Tenant
+								th
+									| User
+								th
+									| Event
+						tbody
+							- if (sensor.log && sensor.log.length > 0)
+								- for (var j = 0; j < sensor.log.length; j++)
+									- var log = sensor.log[j];
+									tr
+										td
+											= (new Date(log.timestamp)).toUTCString()
+										td
+											= (log.data.tenant ? log.data.tenant : '')
+										td
+											= (log.data.email ? log.data.email : '')
+										td
+											= log.message
+							- else
+								tr
+									td
+										span.help-block
+											| No event log
+									td
+									td
+									td

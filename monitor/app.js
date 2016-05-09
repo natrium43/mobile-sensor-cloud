@@ -2,6 +2,10 @@ var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var express = require('express');
+var logger = require('./routes/logger');
+var bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/sensor_db') ;
@@ -36,9 +40,71 @@ io.on('connection', function(socket){
 
     })
   });
+
+  // monitor and log events from provisioning server
+  socket.on('eventLog', function(data) {
+    logger.newEvent(data.body, function(response) {
+      if (!response) {
+        console.log("an error has occurred while logging event.");
+      }
+    });
+  });
 });
 
-server.listen(4000, function(){
-  console.log('socket.io server listening on *:4000');
+/*
+PAYLOAD: {
+  'tenant': 'sjsu',
+  'email': 'keith.ngo@sjsu.edu',
+  'message': 'description of the activity we are logging',
+  'sensor_id': 1001
+}
+*/
+app.post('/monitor/sensors', function (req, res) {
+  logger.newEvent(req.body, function(response) {
+    if (response == false) {
+      res.status(400).send();
+      return;
+    }
+
+    res.status(201).send();
+  });
+});
+
+/*
+RESPONSE: {
+  "message": "New sensor object for SensorID#100 has been provisioned ( or terminated/disabled/enabled).",
+  "timestamp": "2016-05-07T22:10:32.470Z",
+  "data": {
+    'tenant': 'sjsu',
+    'email': 'keith.ngo@sjsu.edu',
+    'sensor_id': 1001
+  }
+}
+*/
+app.get('/monitor/sensors/:sensor_id', function (req, res) {
+  var sensorId = req.params.sensor_id;
+  logger.getEvents(sensorId, function(response) {
+    if (response == null) {
+      res.status(400).send();
+      return;
+    }
+
+    res.send(response);
+  });
+});
+
+app.get('/monitor/sensors', function (req, res) {
+  logger.getAllEvents(function(response) {
+    if (response == null) {
+      res.status(400).send();
+      return;
+    }
+
+    res.send(response);
+  });
+});
+
+server.listen(3003, function(){
+  console.log('socket.io server listening on *:3003');
 });
 
