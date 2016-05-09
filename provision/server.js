@@ -53,7 +53,7 @@ var templateGroupSchema = new Schema({
     sensorGroup: {type: Array},
     availableFrom: {type: Date, default: Date.now},
 });
-var TemplateGroup = mongoose.model('TemplateGroup', templateGroupSchema);
+var TemplateGroup = connSensor.model('TemplateGroup', templateGroupSchema);
 
 var ec2ServerSchema = new Schema({
     instanceId: {type: String, default: 0},
@@ -93,7 +93,10 @@ app.set('view engine', 'ejs');
 app.get('/sensorlist', function (req, res) {
     console.log("I recieved a GET /sensorlist request");
     Sensor.find(function (err, data) {
-        if (err) return console.error(err);
+        if (err) {
+          res.status(400).send();
+          return console.error(err);
+        }
         console.log(data);
         res.json(data)
     });
@@ -141,6 +144,7 @@ app.get('/untemplatedsensors', function (req, res) {
     Sensor.find({'templateFlag': 'False'}, function (err, data) {
         if (err) {
             res.status(400).send();
+            return;
         }
         console.log(data);
         res.json(data);
@@ -150,7 +154,10 @@ app.get('/untemplatedsensors', function (req, res) {
 app.get('/templatelist', function (req, res) {
     console.log("Server recieved a GET /templatelist request");
     Template.find(function (err, data) {
-        if (err) return console.error(err);
+        if (err) {
+          res.status(400).send();
+          return console.error(err);
+        }
         console.log(data);
         //res.render('view_templates.html',data);
         res.json(data);
@@ -161,16 +168,22 @@ app.get('/templatelist/:id', function (req, res) {
     var id = req.params.id;
     console.log("Server recieved a GET /templatelist/" + id + " request");
     Template.findOne({templateId: parseInt(id)}, function (err, data) {
-        if (err) return console.error(err);
+        if (err) {
+          res.status(400).send();
+          return console.error(err);
+        }
         console.log(data);
         res.json(data);
     });
 });
 //API:To get a templategroup list
-app.get('/templateGrouplist', function (req, res) {
-    console.log("Server recieved a GET /templateGrouplist request");
+app.get('/templategrouplist', function (req, res) {
+    console.log("Server recieved a GET /templategrouplist request");
     TemplateGroup.find(function (err, data) {
-        if (err) return console.error(err);
+        if (err) {
+          res.status(400).send();
+          return console.error(err);
+        }
         console.log(data);
         res.json(data);
     });
@@ -204,7 +217,10 @@ app.post('/templatelist', function (req, res) {
         }
         //set flag in sensorDB
         Sensor.findOneAndUpdate({id: req.params.sensorId}, {$set: {templateFlag: "True"}}, {upsert: true}, function (err, doc) {
-            if (err) return res.status(500).send({error: err});
+            if (err) {
+              res.status(500).send({error: err});
+              return;
+            }
             //return res.json(doc);
             console.log("Successfully Updated");
         });
@@ -306,6 +322,7 @@ app.get('/save/template', function (req, res) {
     res.render('save_templates.html'); //CHANGE this to the right page.
 });
 
+/*
 //AWS Related functions
 AWS.config.update({region: 'us-west-1'});
 var ec2 = new AWS.EC2();
@@ -316,7 +333,6 @@ var paramsForCreation = {
     MinCount: 1, MaxCount: 1
 };
 //Create the instance'
-/* EC2 Comments */
 //API to create EC2 servers
 app.get('/createNewServer', function (req, resp) {
     console.log("Server got a request for EC2 Instance Creation");
@@ -578,6 +594,7 @@ function exitHandler(options, err) {
         process.exit();
     }
 }
+*/
 
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:3003', {reconnect: true});
@@ -611,8 +628,8 @@ function EVENT_LOG(body) {
     socket.emit('eventLog',{ body: body });
 }
 
-process.on('exit', exitHandler.bind(null, {cleanup: true}));
-process.on('SIGINT', exitHandler.bind(null, {exit: true}));
+//process.on('exit', exitHandler.bind(null, {cleanup: true}));
+//process.on('SIGINT', exitHandler.bind(null, {exit: true}));
 
 app.listen(3002);
 console.log("Server running at  http://localhost:3002/'");

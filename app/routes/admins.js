@@ -103,7 +103,6 @@ router.get('/admins/sensor-monitor', function(req, res, next) {
 						}
 						if ((index + 1) === length) {
 							render['render']['response'] = sensors;
-							console.log(JSON.stringify(render.render.response));
 							res.render(path.substring(1), render);
 						}
 					});

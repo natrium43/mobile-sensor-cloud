@@ -149,24 +149,16 @@ router.get('/modal/sensor_template', function(req, res, next) {
 	var params = req.params;
 	var query = req.query;
 	request.get({
-		url: _GLOBAL.config.sensor_db + '/sensorlist',
+		url: _GLOBAL.config.sensor_db + '/untemplatedsensors',
 		json: true,
 	}, function(error, response, body) {
 		if (!error && body) {
-			// get available sensors only
-			var fixedBody = [];
-			for (var i = 0; i < body.length; i++) {
-				if (!body[i].hasOwnProperty('templateId')) {
-					fixedBody.push(body[i]);
-				}
-			}
-
 			res.render('modal/sensor_template', {
 				render: {
 					query: {
 						edit: query.edit === 'true' ? true : false 
 					},
-					response: fixedBody
+					response: body
 				}
 			});
 			return;

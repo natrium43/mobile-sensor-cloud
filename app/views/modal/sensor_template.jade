@@ -38,7 +38,7 @@ block content
                                 | *
                         .col-sm-7
                             - if (render.query.edit)
-                                input.form-control(type="number", name='sensorId', value="#{}", readonly)
+                                input.form-control(type="number", name='sensorId', value="#{render.response.sensorId}", readonly)
                             - else
                                 select.form-control(name="sensorId")
                                     option(selected disabled)
