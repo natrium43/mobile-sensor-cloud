@@ -1,7 +1,56 @@
 extends _template
 
 block right_pane
-	- for (var i = 0; i < 6; i++)
-		.col-lg-6.col-md-12.col-sm-12
+	- var test = [{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":34,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":38,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":34,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":38,"Category":{"Number":1,"Name":"Good"}}];
+
+	- for(var j = 0; j < 3; j++)
+		.col-lg-12
 			.panel.panel-default
-				.panel-body(style='height:200px;')
+				.panel-heading
+					strong
+						| Request ID: #{j}&nbsp;
+					| |&nbsp;Sensor Data
+				.table-responsive
+					table.table.table-striped
+						thead
+							tr
+								th
+									| Date
+								th
+									| Hour
+								th
+									| Local Time Zone
+								th
+									| Area
+								th
+									| State
+								th
+									| Latitude
+								th
+									| Longitude
+								th
+									| Parameter
+								th
+									| AQI
+						tbody
+							- for (var i = 0; i < test.length; i++)
+								- var t = test[i];
+								tr
+									td
+										= t.DateObserved
+									td
+										= t.HourObserved
+									td
+										= t.LocalTimeZone
+									td
+										= t.ReportingArea
+									td
+										= t.StateCode
+									td
+										= t.Latitude
+									td
+										= t.Longitude
+									td
+										= t.ParameterName
+									td
+										= t.AQI

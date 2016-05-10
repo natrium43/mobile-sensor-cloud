@@ -118,12 +118,81 @@ router.get('/admins/resources', function(req, res, next) {
 	var sess = req.session;
 	var path = req.path;
 	if (!_GLOBAL.valid_session(sess, req, res)) { return; }
-	res.render(path.substring(1), {
-		render: {
-			title: 'Admin Dashboard',
-			session: sess,
-			section: 'resources'
+	var data = {};
+	request.get({
+		url: _GLOBAL.config.sensor_db + '/servers',
+		json: true
+	}, function(error, response, body) {
+		if (error) {
+			res.status(400).send();
+			return;
 		}
+
+		data['resources'] = body;
+
+		request.get({
+			url: _GLOBAL.config.monitor + '/monitor/resources',
+			json: true
+		}, function(error, response, body) {
+			if (error) {
+				res.status(400).send();
+				return;
+			}
+
+			data['log'] = body;
+			console.log(data);
+
+			res.render(path.substring(1), {
+				render: {
+					title: 'Admin Dashboard',
+					session: sess,
+					section: 'resources',
+					response: data
+				}
+			});
+		});
+	});
+});
+
+router.get('/startInstance/:id', function(req, res, next) {
+	request.get({
+		url: _GLOBAL.config.sensor_db + '/startInstance/' + req.params.id,
+		json: true
+	}, function(error, response, body) {
+		if (error) {
+			res.status(400).send();
+			return;
+		}
+
+		res.send();
+	});
+});
+
+router.get('/stopInstance/:id', function(req, res, next) {
+	request.get({
+		url: _GLOBAL.config.sensor_db + '/stopInstance/' + req.params.id,
+		json: true
+	}, function(error, response, body) {
+		if (error) {
+			res.status(400).send();
+			return;
+		}
+
+		res.send();
+	});
+});
+
+router.get('/createNewServer', function(req, res, next) {
+	request.get({
+		url: _GLOBAL.config.sensor_db + '/createNewServer',
+		json: true
+	}, function(error, response, body) {
+		if (error) {
+			res.status(400).send();
+			return;
+		}
+
+		res.send();
 	});
 });
 

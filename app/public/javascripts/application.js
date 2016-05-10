@@ -181,4 +181,39 @@ $(function() {
 			});
 		}
 	});
+
+	$('.ec2-stop-instance').on('click', function() {
+		var instanceId = $(this).data("instance-id");
+		var r = confirm("Are you sure you want to stop instance ID " + instanceId + "?");
+		if (r) {
+			$.get('/stopInstance/' + instanceId, function(data) {
+				window.location.reload();
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while stopping the instance.');
+			});
+		}
+	});
+
+	$('.ec2-start-instance').on('click', function() {
+		var instanceId = $(this).data("instance-id");
+		var r = confirm("Are you sure you want to start instance ID " + instanceId + "?");
+		if (r) {
+			$.get('/startInstance/' + instanceId, function(data) {
+				window.location.reload();
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while starting the instance.');
+			});
+		}
+	});
+
+	$('.ec2-launch-instance').on('click', function() {
+		var r = confirm("Are you sure you want to launch a new instance?");
+		if (r) {
+			$.get('/createNewServer', function(data) {
+				window.location.reload();
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while launching new instance.');
+			});
+		}
+	});
 });

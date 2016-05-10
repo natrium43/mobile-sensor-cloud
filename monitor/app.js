@@ -3,6 +3,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var express = require('express');
 var logger = require('./routes/logger');
+var resources = require('./routes/resources');
 var bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
@@ -42,10 +43,19 @@ io.on('connection', function(socket){
   });
 
   // monitor and log events from provisioning server
-  socket.on('eventLog', function(data) {
+  socket.on('sensorLog', function(data) {
     logger.newEvent(data.body, function(response) {
       if (!response) {
-        console.log("an error has occurred while logging event.");
+        console.log("an error has occurred while logging sensor event.");
+      }
+    });
+  });
+
+  // monitor and log events for resource management
+  socket.on('resourceLog', function(data) {
+    resources.newEvent(data.body, function(response) {
+      if (!response) {
+        console.log("an error has occurred while logging resource event.");
       }
     });
   });
@@ -93,6 +103,7 @@ app.get('/monitor/sensors/:sensor_id', function (req, res) {
   });
 });
 
+// get log for sensors
 app.get('/monitor/sensors', function (req, res) {
   logger.getAllEvents(function(response) {
     if (response == null) {
@@ -101,6 +112,30 @@ app.get('/monitor/sensors', function (req, res) {
     }
 
     res.send(response);
+  });
+});
+
+// get log for resource management
+app.get('/monitor/resources', function (req, res) {
+  resources.getAllEvents(function(response) {
+    if (response == null) {
+      res.status(400).send();
+      return;
+    }
+
+    res.send(response);
+  });
+});
+
+// monitor resource management
+app.post('/monitor/resources', function (req, res) {
+  resources.newEvent(req.body, function(response) {
+    if (response == false) {
+      res.status(400).send();
+      return;
+    }
+
+    res.status(201).send();
   });
 });
 

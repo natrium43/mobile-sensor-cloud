@@ -2,24 +2,85 @@ extends _template
 
 block right_pane
 	.row
-		.col-md-6
+		.col-lg-12
 			.panel.panel-default
-				.panel-heading
-				.panel-body
-					img.img-responsive(src='http://ingridwu.dmmdmcfatter.com/wp-content/uploads/2015/01/placeholder.png')
-		.col-md-6
-			.panel.panel-default
-				.panel-heading
-				.panel-body
-					img.img-responsive(src='http://ingridwu.dmmdmcfatter.com/wp-content/uploads/2015/01/placeholder.png')
+				.panel-heading.clearfix
+					h4
+						| Resources
+						button.ec2-launch-instance.btn.btn-primary.btn-sm.pull-right(type="button")
+							i.fa.fa-plus
+							| &nbsp;New Instance
+				.table-responsive
+					table.table.table-striped
+						thead
+							tr
+								th
+									| Instance ID
+								th
+									| Instance Type
+								th
+									| State
+								th
+									| Zone
+								th
+									| Action
+						tbody
+							- for (var i = 0; i < render.response.resources.length; i++)
+								- var instance = render.response.resources[i];
+								tr
+									td
+										= instance.instanceId
+									td
+										= instance.instaceType
+									td
+										= instance.status
+									td
+										= instance.AvailabilityZone
+									td
+										- if (instance.status === 'Running')
+											button.ec2-stop-instance.btn.btn-danger.btn-sm(type="button", data-instance-id="#{instance.instanceId}")
+												i.fa.fa-power-off
+												| &nbsp;Stop Instance
+										- else if (instance.status === 'Stopped')
+											button.ec2-start-instance.btn.btn-success.btn-sm(type="button", data-instance-id="#{instance.instanceId}")
+												i.fa.fa-power-off
+												| &nbsp;Start Instance
+										- else
+											button.btn.btn-success.btn-sm(type="button" disabled)
+												i.fa.fa-power-off
+												| &nbsp; Pending
 	.row
-		.col-md-6
+		.col-lg-12
 			.panel.panel-default
-				.panel-heading
-				.panel-body
-					img.img-responsive(src='http://ingridwu.dmmdmcfatter.com/wp-content/uploads/2015/01/placeholder.png')
-		.col-md-6
-			.panel.panel-default
-				.panel-heading
-				.panel-body
-					img.img-responsive(src='http://ingridwu.dmmdmcfatter.com/wp-content/uploads/2015/01/placeholder.png')
+				.panel-heading.clearfix
+					h4
+						| Event Log
+				.table-responsive
+					table.table.table-striped
+						thead
+							tr
+								th
+									| Date
+								th
+									| Instance ID
+								th
+									| Event
+						tbody
+							- if (render.response.log.length > 0)
+								- for (var i = 0; i < render.response.log.length; i++)
+									- var log = render.response.log[i];
+									tr
+										td
+											= new Date(log.timestamp).toLocaleString()
+										td
+											= log.data.instance_id
+										td
+											= log.message
+							- else
+								tr
+									td
+										.help-block
+											| No event log
+									td
+									td
+

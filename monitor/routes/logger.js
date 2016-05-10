@@ -2,25 +2,32 @@ var express = require('express');
 //var router = express.Router();
 var winston = require('winston');
 
-winston.add(winston.transports.File, {
-	filename: './log/sensors.log',
-	level: 'info',
-    json: true,
-    timestamp: true
+var sensor_logger = new winston.Logger({
+  transports: [
+    new (winston.transports.File)({
+    	filename: './log/sensors.log',
+		level: 'info',
+	    json: true,
+	    timestamp: true
+ 	}),
+  ]
 });
 
 var EVENT = {
 	getEvents: function(sensorId, callback) {
+		var endDate = new Date();
+		var startDate = new Date();
+		startDate.setDate(startDate.getDate() - 7);
 		var options = {
-			//from: new Date - 24 * 60 * 60 * 1000,
-			//until: new Date,
+			from: startDate,
+			until: endDate,
 			limit: 50,
 			start: 0,
 			order: 'desc',
 			fields: ['message', 'data', 'timestamp']
 		};
 
-		winston.query(options, function (err, results) {
+		sensor_logger.query(options, function (err, results) {
 			if (err) {
 				console.log(err);
 				callback(null);
@@ -39,16 +46,19 @@ var EVENT = {
 		});
 	},
 	getAllEvents: function(callback) {
+		var endDate = new Date();
+		var startDate = new Date();
+		startDate.setDate(startDate.getDate() - 7);
 		var options = {
-			//from: new Date - 24 * 60 * 60 * 1000,
-			//until: new Date,
-			//limit: 10,
+			from: startDate,
+			until: endDate,
+			limit: 50,
 			start: 0,
 			order: 'desc',
 			fields: ['message', 'data', 'timestamp']
 		};
 
-		winston.query(options, function (err, results) {
+		sensor_logger.query(options, function (err, results) {
 			if (err) {
 				console.log(err);
 				callback(null);
@@ -73,7 +83,7 @@ var EVENT = {
 		// get message
 		var msg = body.message;
 		delete body['message'];
-		winston.info(msg, {'data': body});
+		sensor_logger.info(msg, {'data': body});
 		callback(true)
 	}
 };

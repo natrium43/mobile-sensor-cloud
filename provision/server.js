@@ -197,7 +197,7 @@ app.post('/sensorlist', function (req, res) {
             res.status(400).send();
             return console.error(err);
         }
-        EVENT_LOG({
+        SENSOR_LOG({
             'email': 'owner@sjsu.edu',
             'message': 'Owner registered new sensor. (Type: ' + req.body.type + ', Description: ' + req.body.description + ')',
             'sensor_id': req.body.id
@@ -216,7 +216,7 @@ app.post('/templatelist', function (req, res) {
             return console.error(err);
         }
         //set flag in sensorDB
-        Sensor.findOneAndUpdate({id: req.params.sensorId}, {$set: {templateFlag: "True"}}, {upsert: true}, function (err, doc) {
+        Sensor.findOneAndUpdate({id: req.params.sensorId}, {$set: {templateFlag: "True"}}, {upsert: false}, function (err, doc) {
             if (err) {
               res.status(500).send({error: err});
               return;
@@ -252,7 +252,7 @@ app.delete('/sensorList/:id', function (req, res) {
             console.log("Could not Delete Sensor with id", id);
         }
         else {
-            EVENT_LOG({
+            SENSOR_LOG({
                 'email': 'owner@sjsu.edu',
                 'message': 'Owner deleted sensor ID#' + id,
                 'sensor_id': id
@@ -322,7 +322,7 @@ app.get('/save/template', function (req, res) {
     res.render('save_templates.html'); //CHANGE this to the right page.
 });
 
-/*
+
 //AWS Related functions
 AWS.config.update({region: 'us-west-1'});
 var ec2 = new AWS.EC2();
@@ -336,26 +336,38 @@ var paramsForCreation = {
 //API to create EC2 servers
 app.get('/createNewServer', function (req, resp) {
     console.log("Server got a request for EC2 Instance Creation");
+    RESOURCE_LOG({
+        'instance_id': 'n/a',
+        'message': 'Attempting to create a new EC2 instance.'
+    });
     ec2.runInstances(paramsForCreation, function (err, data) {
         if (err) {
             console.log("Could not create instance", err);
-            return res.status(500).send({error: err});
+            RESOURCE_LOG({
+                'instance_id': 'n/a',
+                'message': 'Failed to create a new EC2 instance.'
+            });
+            return resp.status(500).send({error: err});
         }
         var instanceId = data.Instances[0].InstanceId;
         console.log("Created instance", instanceId);
+        RESOURCE_LOG({
+            'instance_id': 'n/a',
+            'message': 'Successfully created new EC2 instance.'
+        });
         EC2Server.find(function (err, data) {
-            if (err) return res.status(500).send({error: err});
+            if (err){ console.log("Could not find EC2Server db");return resp.status(500).send({error: err});}
             console.log(data)
             data.forEach(function (record) {
-                EC2Server.findOneAndUpdate({instanceId: record.instanceId}, {$set: {"active": "Inactive"}}, {upsert: true}, function (err, doc) {
-                    if (err) return res.status(500).send({error: err});
+                EC2Server.findOneAndUpdate({instanceId: record.instanceId}, {$set: {"active": "Inactive"}}, {upsert: false}, function (err, doc) {
+                    if (err) return resp.status(500).send({error: err});
                     console.log("Successfully Updated server db");
                     // resp.sendStatus(200);
                 });
             });
-            var newEC2Server = new EC2Server({"instanceId": instanceId}, {"status": "Running"});
+            var newEC2Server = new EC2Server({"instanceId": instanceId ,"status": "Running"});
             newEC2Server.save(function (err, data) {
-                if (err)  return res.status(500).send({error: err});
+                if (err)  return resp.status(500).send({error: err});
                 console.log(data);
                 resp.json(data)
             });
@@ -423,6 +435,10 @@ function startInstances(instId, callback) {
 //API to start instances by id
 app.get('/startInstance/:id', function (req, resp) {
     console.log("Sever got a request to start EC2 instance", req.params.id);
+    RESOURCE_LOG({
+        'instance_id': req.params.id,
+        'message': 'Attempting to start EC2 server instance.'
+    });
     var instances = [];
     instances.push(req.params.id);
     var paramsOldInstances = {
@@ -431,14 +447,23 @@ app.get('/startInstance/:id', function (req, resp) {
     };
     ec2.startInstances(paramsOldInstances, function (err, data) {
         if (err) {
+            RESOURCE_LOG({
+                'instance_id': req.params.id,
+                'message': 'Failed to start EC2 server instance.'
+            });
             console.log(err)
             resp.sendStatus(500);
+            return;
         }
         else {
             console.log(data);
             EC2Server.findOneAndUpdate({instanceId: req.params.id}, {$set: {"status": "Running"}}, {upsert: true}, function (err, doc) {
                 if (err) return res.status(500).send({error: err});
                 console.log("Successfully started EC2 server instance");
+                RESOURCE_LOG({
+                    'instance_id': req.params.id,
+                    'message': 'Successfully started EC2 server instance.'
+                });
                 // resp.sendStatus(200);
             });
             //resp.json(data);
@@ -450,6 +475,10 @@ app.get('/startInstance/:id', function (req, resp) {
 //API to stop instances by id
 app.get('/stopInstance/:id', function (req, resp) {
     console.log('Server got a request to stop Instance')
+    RESOURCE_LOG({
+        'instance_id': req.params.id,
+        'message': 'Attempting to stop EC2 server instance.'
+    });
     var instances = [];
     instances.push(req.params.id);
     var paramsForStop = {
@@ -459,13 +488,22 @@ app.get('/stopInstance/:id', function (req, resp) {
     };
     ec2.stopInstances(paramsForStop, function (err, data) {
         if (err) {
+            RESOURCE_LOG({
+                'instance_id': req.params.id,
+                'message': 'Failed to stop EC2 server instance.'
+            });
             console.log(err, err.stack);
             resp.sendStatus(500);
+            return;
         } // an error occurred
         else {
             EC2Server.findOneAndUpdate({instanceId: req.params.id}, {$set: {"status": "Stopped"}}, {upsert: true}, function (err, doc) {
-                if (err) return res.status(500).send({error: err});
+                if (err) { return res.status(500).send({error: err}); }
                 else {
+                    RESOURCE_LOG({
+                        'instance_id': req.params.id,
+                        'message': 'Successfully stopped EC2 server instance.'
+                    });
                     console.log("Successfully Stopped EC2 server instance");
                     console.log(data)
                     resp.sendStatus(200);
@@ -594,7 +632,7 @@ function exitHandler(options, err) {
         process.exit();
     }
 }
-*/
+
 
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:3003', {reconnect: true});
@@ -624,12 +662,17 @@ app.get('/check/health/:id', function (req, res) {
     socket.emit('eventToClient',{ id: id , resKey: key}); // pass the key where the response object stored so that can be retrieved later
 })
 // send event to monitor server
-function EVENT_LOG(body) {
-    socket.emit('eventLog',{ body: body });
+function SENSOR_LOG(body) {
+    socket.emit('sensorLog',{ body: body });
 }
 
-//process.on('exit', exitHandler.bind(null, {cleanup: true}));
-//process.on('SIGINT', exitHandler.bind(null, {exit: true}));
+// send event to monitor server
+function RESOURCE_LOG(body) {
+    socket.emit('resourceLog',{ body: body });
+}
+
+process.on('exit', exitHandler.bind(null, {cleanup: true}));
+process.on('SIGINT', exitHandler.bind(null, {exit: true}));
 
 app.listen(3002);
 console.log("Server running at  http://localhost:3002/'");
