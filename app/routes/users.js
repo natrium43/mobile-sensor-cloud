@@ -84,11 +84,51 @@ router.get('/users/sensor-monitor', function(req, res, next) {
 	var sess = req.session;
 	var path = req.path;
 	if (!_GLOBAL.valid_session(sess, req, res)) { return; }
+
+	var test = [{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":34,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":38,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":34,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":38,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-10 ","HourObserved":16,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":43,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-10 ","HourObserved":16,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":56,"Category":{"Number":2,"Name":"Moderate"}},{"DateObserved":"2016-05-10 ","HourObserved":20,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":31,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-10 ","HourObserved":20,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":57,"Category":{"Number":2,"Name":"Moderate"}}];
+	var aqi = [];
+	var dates = [];
+	var times = [];
+	for (var i = 0; i < test.length; i++) {
+		var t = test[i];
+		aqi.push(t.AQI);
+		dates.push(t.DateObserved);
+		times.push(t.HourObserved);
+	}
+	var graph1 =  {
+		'datasets': [
+	        {
+	            label: 'Air Quality Index (AQI)',
+				borderColor: "rgb(0,128,255)",
+				backgroundColor: "rgba(0,128,255,0.5)",
+	            data: aqi
+	        }],
+	    'labels': dates
+	};
+
+	var graph2 = {
+		'datasets': [
+	        {
+	            label: 'Air Quality Index (AQI)',
+				borderColor: "rgb(0,128,255)",
+				backgroundColor: "rgba(0,128,255,0.5)",
+	            data: aqi
+	        }],
+	    'labels': times.sort()
+	};
+
 	res.render(path.substring(1), {
 		render: {
 			title: 'User Dashboard',
 			session: sess,
-			section: 'sensor-monitor'
+			section: 'sensor-monitor',
+			response: {
+				graph: {
+					dates: JSON.stringify(graph1),
+					hours: JSON.stringify(graph2)
+				},
+				data: test
+			}
 		}
 	});
 });

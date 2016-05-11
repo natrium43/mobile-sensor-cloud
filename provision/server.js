@@ -5,7 +5,7 @@ var AWS = require('aws-sdk');
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var request = require('request');
+var request_module = require('request');
 
 //database connections
 autoIncrement = require('mongoose-auto-increment');
@@ -306,11 +306,14 @@ app.put('/templatelist/:id', function (req, res) {
 });
 //API to get sensor data
 app.get('/getAirData', function (req, res) {
-    request('http://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=95131&distance=25&API_KEY=1035C2AC-CDB8-4540-97E4-0E8D82BA335A', function (error, response, body) {
+    request_module('http://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=95131&distance=25&API_KEY=1035C2AC-CDB8-4540-97E4-0E8D82BA335A', function (error, response, body) {
         if (!error && response.statusCode == 200) {
             console.log(body);
-            res.json(body);
+            res.send(body);
+            return;
         }
+
+        res.status(400).send();
     });
 });
 

@@ -1,15 +1,29 @@
 extends _template
 
 block right_pane
-	- var test = [{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":34,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":38,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":34,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":38,"Category":{"Number":1,"Name":"Good"}}];
-
-	- for(var j = 0; j < 3; j++)
+	.row
+		.col-lg-6(style="text-align: center;")
+			h4
+				| Air Quality Index and Dates
+			canvas#dates-chart(width="auto", height="auto")
+			.help-block
+				| Dates
+		.col-lg-6(style="text-align: center;")
+			h4
+				| Air Quality Index and Hours of Day
+			canvas#hours-chart(width="auto", height="auto")
+			.help-block
+				| Hours
+	br
+	br
+	- function convertTime(hour) { var time = ""; time = hour > 12 ? (hour - 12) + ":00PM" : hour + ":00AM"; time = hour === 12 ? "12:00PM" : time; return time; }
+	- var aqi_color = {"1": "#008000", "2": "#ffd700", "3": "#ff7e00", "4": "#ff0000", "5": "#99004c", "6": "#7e0023"}
+	.row
 		.col-lg-12
 			.panel.panel-default
 				.panel-heading
 					strong
-						| Request ID: #{j}&nbsp;
-					| |&nbsp;Sensor Data
+						| Sensor Data
 				.table-responsive
 					table.table.table-striped
 						thead
@@ -23,29 +37,27 @@ block right_pane
 								th
 									| Area
 								th
-									| State
-								th
 									| Latitude
 								th
 									| Longitude
 								th
 									| Parameter
 								th
-									| AQI
+									| Air Quality Index (AQI)
+								th
+									| AQI Descriptor
 						tbody
-							- for (var i = 0; i < test.length; i++)
-								- var t = test[i];
+							- for (var i = 0; i < render.response.data.length; i++)
+								- var t = render.response.data[i];
 								tr
 									td
 										= t.DateObserved
 									td
-										= t.HourObserved
+										= convertTime(t.HourObserved)
 									td
 										= t.LocalTimeZone
 									td
-										= t.ReportingArea
-									td
-										= t.StateCode
+										= t.ReportingArea + " (" + t.StateCode + ")"
 									td
 										= t.Latitude
 									td
@@ -54,3 +66,47 @@ block right_pane
 										= t.ParameterName
 									td
 										= t.AQI
+									td
+										span.label(style="background-color: #{aqi_color[t.Category.Number.toString()]}")
+											= t.Category.Name
+
+	script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.2/Chart.min.js")
+	script(type="text/javascript").
+		var datesChart = !{render.response.graph.dates};
+		var hoursChart = !{render.response.graph.hours};
+		var ctx = document.getElementById("dates-chart");
+		var myChart = new Chart(ctx, {
+		    type: 'line',
+		    data: {
+		        labels: datesChart.labels,
+		        datasets: datesChart.datasets
+		    },
+		    options: {
+		        scales: {
+		            yAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                }
+		            }]
+		        }
+		    }
+		});
+
+		var ctx2 = document.getElementById("hours-chart");
+		var myChart2 = new Chart(ctx2, {
+		    type: 'line',
+		    data: {
+		        labels: hoursChart.labels,
+		        datasets: hoursChart.datasets
+		    },
+		    options: {
+		        scales: {
+		            yAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                }
+		            }]
+		        }
+		    }
+		});
+		
