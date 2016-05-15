@@ -78,7 +78,12 @@ app.get('/SensorStatus/:requestId', function (req, res) {
       res.status(400).send();
       return console.error(err);
     }
-    res.json({'status': data.status});
+
+    if (data) {
+      res.json({'status': data.status});
+    } else {
+      res.json({'status': ''});
+    }
   });
 });
 
