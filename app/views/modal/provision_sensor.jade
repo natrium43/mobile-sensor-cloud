@@ -22,8 +22,18 @@ block content
                                         .row
                                             label.control-label.col-lg-7
                                                 | Template ID
-                                            .col-lg-5
+                                            .col-lg-5.text-primary
                                                 = t.templateId
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Zip Code
+                                            .col-lg-5.text-primary
+                                                = t.zipCode
+                                        .row
+                                            label.control-label.col-lg-7
+                                                | Type
+                                            .col-lg-5.text-primary
+                                                = t.type
                                         .row
                                             label.control-label.col-lg-7
                                                 | Min. Sample Period
@@ -39,59 +49,50 @@ block content
                                                 | Min. Value
                                             .col-lg-5
                                                 = t.minValue
-                                        .row
-                                            label.control-label.col-lg-7
-                                                | Response Time
-                                            .col-lg-5
-                                                = t.responseTime ? t.responseTime : 'n/a'
-                                        .row
-                                            label.control-label.col-lg-7
-                                                | Type
-                                            .col-lg-5
-                                                = t.type
+                                        br
                                         .row
                                             .container-fluid
                                                 button.provision-sensor.btn.btn-primary.btn-block(data-user-id="#{ render.session.user_id }", data-tenant-id="#{ render.session.tenant_id }", data-template-id="#{ t.templateId }", data-template-type="templateId")
                                                     | Request
-                        - for (var i = 0; i < render.response.group_templates.length; i++)
-                            - var t = render.response.group_templates[i];
-                            .col-lg-4.col-md-6
-                                .panel.panel-default
-                                    .panel-body
-                                        .row
-                                            label.control-label.col-lg-7
-                                                | Group Template ID
-                                            .col-lg-5
-                                                = t.templateGroupId
-                                        .row
-                                            label.control-label.col-lg-7
-                                                | Sensor Group
-                                            .col-lg-5
-                                                = t.sensorGroup.length > 0? t.sensorGroup : 'n/a'
-                                        .row
-                                            label.control-label.col-lg-7
-                                                | Description
-                                            .col-lg-5
-                                                = t.description ? t.description : 'n/a'
-                                        .row
-                                            label.control-label.col-lg-7
-                                                | &nbsp;
-                                            .col-lg-5
-                                                | &nbsp;
-                                        .row
-                                            label.control-label.col-lg-7
-                                                | &nbsp;
-                                            .col-lg-5
-                                                | &nbsp;
-                                        .row
-                                            label.control-label.col-lg-7
-                                                | &nbsp;
-                                            .col-lg-5
-                                                | &nbsp;
-                                        .row
-                                            .container-fluid
-                                                button.provision-sensor.btn.btn-primary.btn-block(data-user-id="#{ render.session.user_id }", data-tenant-id="#{ render.session.tenant_id }", data-template-id="#{ t.templateGroupId }", data-template-type="templateGroupId")
-                                                    | Request
+                        //- for (var i = 0; i < render.response.group_templates.length; i++)
+                            //- var t = render.response.group_templates[i];
+                            //- .col-lg-4.col-md-6
+                            //-     .panel.panel-default
+                            //-         .panel-body
+                            //-             .row
+                            //-                 label.control-label.col-lg-7
+                            //-                     | Group Template ID
+                            //-                 .col-lg-5
+                            //-                     = t.templateGroupId
+                            //-             .row
+                            //-                 label.control-label.col-lg-7
+                            //-                     | Sensor Group
+                            //-                 .col-lg-5
+                            //-                     = t.sensorGroup.length > 0? t.sensorGroup : 'n/a'
+                            //-             .row
+                            //-                 label.control-label.col-lg-7
+                            //-                     | Description
+                            //-                 .col-lg-5
+                            //-                     = t.description ? t.description : 'n/a'
+                            //-             .row
+                            //-                 label.control-label.col-lg-7
+                            //-                     | &nbsp;
+                            //-                 .col-lg-5
+                            //-                     | &nbsp;
+                            //-             .row
+                            //-                 label.control-label.col-lg-7
+                            //-                     | &nbsp;
+                            //-                 .col-lg-5
+                            //-                     | &nbsp;
+                            //-             .row
+                            //-                 label.control-label.col-lg-7
+                            //-                     | &nbsp;
+                            //-                 .col-lg-5
+                            //-                     | &nbsp;
+                            //-             .row
+                            //-                 .container-fluid
+                            //-                     button.provision-sensor.btn.btn-primary.btn-block(data-user-id="#{ render.session.user_id }", data-tenant-id="#{ render.session.tenant_id }", data-template-id="#{ t.templateGroupId }", data-template-type="templateGroupId")
+                            //-                         | Request
                 .modal-footer
                     button.btn.btn-default(type='button', data-dismiss='modal')
                         | Close

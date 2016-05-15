@@ -2,43 +2,53 @@ extends _template
 
 block right_pane
 	.container-fluid
-		- for (var i = 0; i < render.response.active_subscriptions.length; i++)
-			- var sub = render.response.active_subscriptions[i];
-			- var c = 'success';
-			.col-lg-4.col-md-4.col-sm-6
-				.panel(class="panel-#{c}", style='border-width: 2px;')
-					.panel-heading
-					.panel-body
-						.row
-							label.control-label.col-lg-6
-								| Request ID
-							.col-lg-6
-								= sub.request_id
-						.row
-							label.control-label.col-lg-6
-								| Template ID
-							.col-lg-6
-								= sub.template_id
-						.row
-							label.control-label.col-lg-6
-								| Status
-							.col-lg-6
-								span.label(class="label-#{c}")
-									= (c === 'success' ? 'Active' : 'Inactive')
-						.row
-							label.control-label.col-lg-6
-								| Type
-							.col-lg-6
-								| Air flow
-						br
-						.row
-							.container-fluid
-								- var status = (c === 'danger' ? 'Enable' : 'Disable');
-								button.control-sensor.btn.btn-default.btn-sm.pull-right.spacing(data-request-id="#{ sub.request_id }", data-action="#{ status }")
-									i.fa.fa-power-off
-										| &nbsp;
-									= status
-								button.terminate-sensor.btn.btn-default.btn-sm.pull-right.spacing(data-request-id="#{ sub.request_id }")
-									i.fa.fa-trash
-									| &nbsp;Terminate
-								
+		- if (render.response.length > 0)
+			- for (var i = 0; i < render.response.length; i++)
+				- var sub = render.response[i];
+				- var c = (sub.sensor_status === 'Active' ? 'success' : 'danger');
+				.col-lg-4.col-md-4.col-sm-6
+					.panel(class="panel-#{c}", style='border-width: 2px;')
+						.panel-heading
+						.panel-body
+							.row
+								label.control-label.col-lg-6
+									| Request ID
+								.col-lg-6
+									= sub.request_id
+							.row
+								label.control-label.col-lg-6
+									| Template ID
+								.col-lg-6
+									= sub.template_id
+							.row
+								label.control-label.col-lg-6
+									| Zip Code
+								.col-lg-6
+									= sub.zipCode
+							.row
+								label.control-label.col-lg-6
+									| Sensor Status
+								.col-lg-6
+									span.label(class="label-#{c}")
+										= sub.sensor_status
+							.row
+								label.control-label.col-lg-6
+									| Type
+								.col-lg-6
+									= sub.type
+							br
+							.row
+								.container-fluid
+									- var status = (sub.sensor_status === 'Active' ? 'Disable' : 'Enable');
+									button.control-sensor.btn.btn-default.btn-sm.pull-right.spacing(data-request-id="#{ sub.request_id }", data-action="#{status}")
+										i.fa.fa-power-off
+											| &nbsp;
+										= status
+									button.terminate-sensor.btn.btn-default.btn-sm.pull-right.spacing(data-request-id="#{sub.request_id}")
+										i.fa.fa-trash
+										| &nbsp;Terminate
+		- else
+			.container.col-lg-4.col-lg-offset-4.col-md-6.col-md-offset-3.col-sm-12
+				.alert.alert-info
+					i.fa.fa-info-circle
+					| &nbsp; You do not have any provisioned sensors.

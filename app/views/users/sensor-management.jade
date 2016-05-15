@@ -5,80 +5,50 @@ block right_pane
 		.container-fluid
 			.panel.panel-default
 				.panel-heading.clearfix
+					h4.pull-left
+						| Request History
 					button.btn.btn-primary.pull-right.spacing(id='new-sensor-request', title='Provision new sensor')
 						i.fa.fa-plus
 						| &nbsp;New Request
 				.panel-body
-					ul.nav.nav-tabs
-						li.active
-							a(href='#sensor-templates-tab', data-toggle='tab')
-								| Sensor Status
-						li
-							a(href='#sensor-group-templates-tab', data-toggle='tab')
-								| Request History
-					.tab-content
-						#sensor-templates-tab.tab-pane.fade.in.active
-							br
-							.container-fluid
-								table.table.table-striped(id='sensor-group-templates-table')
-									thead
-										tr
-											th
-												| Request ID
-											th
-												| Template ID
-											th
-												| Status
-											th
-												| Type
-											th
-												| Provision Date
-									tbody
-										- for (var i = 0; i < render.response.active_subscriptions.length; i++)
-											- var sub = render.response.active_subscriptions[i];
-											tr
-												td
-													= sub.request_id
-												td
-													= sub.template_id
-												td
-													span.label(class="label-success")
-														| Active
-												td
-													| Air flow
-												td
-													- var rand = Math.floor((Math.random() * 15) + 1);
-														= (new Date(sub.created)).toLocaleDateString() + " (UTC)"
-
-						#sensor-group-templates-tab.tab-pane.fade.in
-							br
-							.container-fluid
-								table.table.table-striped(id='sensor-group-templates-table')
-									thead
-										tr
-											th
-												| Request ID
-											th
-												| Template ID
-											th
-												| Type
-											th
-												| Provision Date
-											th
-												| Terminate Date
-									tbody
-										- for (var i = 0; i < render.response.terminated_subscriptions.length; i++)
-											- var sub = render.response.terminated_subscriptions[i];
-											tr
-												td
-													= sub.request_id
-												td
-													= sub.template_id
-												td
-													| Air flow
-												td
-													- var rand = Math.floor((Math.random() * 15) + 1);
-														= (new Date(sub.created)).toLocaleDateString() + " (UTC)"
-												td
-													- var rand = Math.floor((Math.random() * 15) + 1);
-														= (new Date(sub.destroyed)).toLocaleDateString() + " (UTC)"
+					table.table.table-striped(id='sensor-group-templates-table')
+						thead
+							tr
+								th
+									| Request ID
+								th
+									| Template ID
+								th
+									| Zip Code
+								th
+									| Request Status
+								th
+									| Type
+								th
+									| Provision Date
+								th
+									| Terminate Date
+						tbody
+							- for (var i = 0; i < render.response.length; i++)
+								- var sub = render.response[i];
+								- var c = (sub.status === 'active' ? 'success' : 'default');
+								- c = (sub.status === 'terminated' ? 'danger' : c);
+								tr
+									td
+										= sub.request_id
+									td
+										= sub.template_id
+									td
+										= sub.zipCode
+									td
+										span.label(class="label-#{c}")
+											= sub.status
+									td
+										= sub.type
+									td
+										= (new Date(sub.created)).toLocaleDateString() + " (UTC)"
+									td
+										- if (sub.status === 'terminated')
+											= (new Date(sub.destroyed)).toLocaleDateString() + " (UTC)"
+										- else
+											| -

@@ -48,6 +48,11 @@ block content
                                             = render.response[i].id
                     .form-group
                         label.control-label.col-sm-4
+                            | Zip Code
+                        .col-sm-7
+                            input.form-control(type="text", name='zipCode', placeholder='Enter Zip Code', value="#{render.query.edit ? render.response.zipCode : ''}")
+                    .form-group
+                        label.control-label.col-sm-4
                             | Minimum Sample Period
                         .col-sm-7
                             input.form-control(type="text", name='minSamplePeriod', placeholder='Enter Minimum Sample Period', value="#{render.query.edit ? render.response.minSamplePeriod : '1ms'}")
@@ -73,16 +78,22 @@ block content
                             select.form-control(name="type")
                                 option(selected disabled)
                                     | Select sensor type
-                                - if (render.query.edit && render.response.type && render.response.type === 'Airflow')
+                                - if (render.query.edit && render.response.type && render.response.type === 'Air Quality')
+                                    option(value="Air Quality" selected)
+                                        | Air Quality
+                                - else
+                                    option(value="Air Quality")
+                                        | Air Quality
+                                //- if (render.query.edit && render.response.type && render.response.type === 'Airflow')
                                     option(value="Airflow" selected)
                                         | Airflow
-                                - else
+                                //- else
                                     option(value="Airflow")
                                         | Airflow
-                                - if (render.query.edit && render.response.type && render.response.type === 'Water')
+                                //- if (render.query.edit && render.response.type && render.response.type === 'Water')
                                     option(value="Water" selected)
                                         | Water
-                                - else
+                                //- else
                                     option(value="Water")
                                         | Water
                     - if (!render.query.edit)

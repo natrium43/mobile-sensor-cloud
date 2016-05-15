@@ -12,7 +12,8 @@ var _GLOBAL = {
 	config: {
 		'user_db': 'http://127.0.0.1:3001',
 		'sensor_db': 'http://127.0.0.1:3002',
-		'monitor': 'http://127.0.0.1:3003'
+		'monitor': 'http://127.0.0.1:3003',
+		'vsensor': 'http://127.0.0.1:3004'
 	}
 }
 

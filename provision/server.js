@@ -7,6 +7,10 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var request_module = require('request');
 
+var VSENSOR = 'http://127.0.0.1:3004';
+var APIString = "http://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode="
+var APIKey = "&distance=25&API_KEY=1035C2AC-CDB8-4540-97E4-0E8D82BA335A"
+
 //database connections
 autoIncrement = require('mongoose-auto-increment');
 
@@ -37,6 +41,7 @@ var Sensor = connSensor.model('Sensor', sensorSchema);
  */
 var templateSchema = new Schema({
     templateId: {type: Number, required: true, unique: true},
+    zipCode: {type: String, default: '95192'},
     minSamplePeriod: {type: String, default: '1ms'},
     maxValue: {type: Number, default: 100},
     minValue: {type: Number, default: 0},
@@ -63,6 +68,7 @@ var ec2ServerSchema = new Schema({
     status: {type: String, required: true}
 });
 var EC2Server = conn.model('EC2Server', ec2ServerSchema)
+
 var sensorUsersSchema = new Schema({
     reqId: {type: Number, required: true, unique: true},
     sensorId: {type: Number, required: true}
@@ -101,6 +107,33 @@ app.get('/sensorlist', function (req, res) {
         res.json(data)
     });
 });
+
+// get sensor info/status for a request
+app.get('/userSensors/request/:requestId/template/:templateId', function(req, res) {
+    var params = req.params;
+    console.log("Server recieved a GET /userSensors request " + JSON.stringify(params, undefined, 4));
+    Template.findOne({templateId: parseInt(params.templateId)}, function (err, data) {
+        if (err) {
+            res.status(400).send();
+            return console.error(err);
+        } else {
+            request_module.get(VSENSOR + '/SensorStatus/' + params.requestId, function(err, response, body) {
+                if (err) {
+                    res.status(400).send();
+                    return console.error(err);
+                } else {
+                    var info = {
+                        'zipCode': data.zipCode,
+                        'type': data.type,
+                        'status': JSON.parse(body).status
+                    };
+                    res.send(info);
+                }
+            });
+        }
+    });
+});
+
 //API: To get list of user’s sensor statuses
 app.get('/userSensors/:ids', function (req, res) {
     console.log("Server recieved a GET /usersensors request", req.params.ids);
@@ -333,7 +366,8 @@ var ec2 = new AWS.EC2();
 var paramsForCreation = {
     ImageId: 'ami-1b0f7d7b', // Amazon Linux AMI x86_64 EBS
     InstanceType: 't2.micro',//free tier eligible
-    MinCount: 1, MaxCount: 1
+    MinCount: 1, MaxCount: 1,
+    KeyName: 'Key_TeamProject'
 };
 //Create the instance'
 //API to create EC2 servers
@@ -636,6 +670,15 @@ function exitHandler(options, err) {
     }
 }
 
+// send event to monitor server
+function SENSOR_LOG(body) {
+    socket.emit('sensorLog',{ body: body });
+}
+
+// send event to monitor server
+function RESOURCE_LOG(body) {
+    socket.emit('resourceLog',{ body: body });
+}
 
 var io = require('socket.io-client');
 var socket = io.connect('http://localhost:3003', {reconnect: true});
@@ -663,16 +706,59 @@ app.get('/check/health/:id', function (req, res) {
     var key = Date.now();
     healthResObj[key] = res;
     socket.emit('eventToClient',{ id: id , resKey: key}); // pass the key where the response object stored so that can be retrieved later
-})
-// send event to monitor server
-function SENSOR_LOG(body) {
-    socket.emit('sensorLog',{ body: body });
-}
+});
 
-// send event to monitor server
-function RESOURCE_LOG(body) {
-    socket.emit('resourceLog',{ body: body });
-}
+app.post('/provisionSensor',function(req,resp){
+    console.log("Received request for /provisionSensor");
+    console.log(req.body);
+    var result =[];
+    var query = Template.findOne({'templateId':req.body.templateId}).select('sensorId zipCode -_id')
+    query.exec(function(err,data){
+        if(err){
+            console.log(err)
+            resp.status(400).send();
+        }
+        else{
+            //console.log(JSON.stringify(data, undefined, 4));
+            //result.push(data);
+            var zipcode = data.zipCode;
+            var apiforTemplate = APIString+zipcode+APIKey
+            console.log(apiforTemplate)
+            console.log(data.sensorId);
+            var query = Sensor.findOne({'id':data.sensorId}).select('id -_id')
+            query.exec(function(err,data){
+                if(err){
+                    console.log(err)
+                    resp.status(400).send()
+                }
+                else
+                {
+                    //console.log(JSON.stringify(data, undefined, 4));
+                    result.push({requestId:req.body.requestId,sensorId:data.id,api:apiforTemplate});
+                    
+                    //INSERT JESSI'S API HERE
+                    var options = {
+                        url: VSENSOR + '/ProvisionTemplate',
+                        json: true,
+                        body: result[0]
+                    };
+
+                    console.log("PROVISION REQUEST: " + JSON.stringify(options, undefined, 4));
+                    request_module.post(options, function(err, response, body) {
+                        if (err || response.statusCode === 400) {
+                            console.log(err);
+                            resp.status(400).send();
+                            return;
+                        }
+                        resp.send(result);
+                    });
+                }
+            })
+
+        }
+    })
+
+})
 
 process.on('exit', exitHandler.bind(null, {cleanup: true}));
 process.on('SIGINT', exitHandler.bind(null, {exit: true}));

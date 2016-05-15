@@ -4,23 +4,19 @@ block right_pane
 	- for (var i = 0; i < render.response.length; i++)
 		- var sensor = render.response[i];
 		.col-lg-12
-			.panel.panel-primary
-				.panel-heading(style="font-size: 1.2em; font-weight: bold;")
+			.panel.panel-default
+				.panel-heading(style="font-size: 1.1em")
 					i.fa.fa-map-marker
 						| &nbsp;
-					| Sensor #{sensor.id}
+					| Sensor ID #{sensor.id}
 					span(style="font-weight: normal")
-						| &nbsp;Event Log
+						| &nbsp;|&nbsp;Event Log
 				.table-responsive
 					table.table.table-striped
 						thead
 							tr
 								th
 									| Date
-								th
-									| Tenant
-								th
-									| User
 								th
 									| Event
 						tbody
@@ -30,10 +26,6 @@ block right_pane
 									tr
 										td
 											= (new Date(log.timestamp)).toUTCString()
-										td
-											= (log.data.tenant ? log.data.tenant : '')
-										td
-											= (log.data.email ? log.data.email : '')
 										td
 											= log.message
 							- else

@@ -55,7 +55,7 @@ app.get('/tenants', function(req, res) {
 			res.status(400).send();
 			return;
 		}
-		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows));
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows, undefined, 4));
 		res.send(rows);
 	});
 });
@@ -69,7 +69,7 @@ app.get('/tenants/:tenant', function(req, res) {
 			res.status(400).send();
 			return;
 		}
-		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows[0]));
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows[0], undefined, 4));
 		res.send(rows[0]);
 	});
 });
@@ -98,7 +98,7 @@ app.get('/tenants/:tenant/users', function(req, res) {
 			res.status(400).send();
 			return;
 		}
-		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows));
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows, undefined, 4));
 		res.send(rows);
 	});
 });
@@ -113,7 +113,7 @@ app.get('/tenants/:tenant/users/:email', function(req, res) {
 			res.status(400).send();
 			return;
 		}
-		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows[0]));
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows[0], undefined, 4));
 		res.send(rows[0]);
 	});
 });
@@ -172,7 +172,7 @@ app.get('/owners/:email', function(req, res) {
 			res.status(400).send();
 			return;
 		}
-		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows[0]));
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows[0], undefined, 4));
 		res.send(rows[0]);
 	});
 });
@@ -243,7 +243,7 @@ app.post('/authenticate', function(req, res) {
 	// if system admin, use SYSADMIN object to authenticate
 	if (payload.account === 'admins') {
 		if (bcrypt.compareSync(payload.password, SYSADMIN.password)) {
-			_ACCESS_LOG.success(req.method, req.url, JSON.stringify(SYSADMIN));
+			_ACCESS_LOG.success(req.method, req.url, JSON.stringify(SYSADMIN, undefined, 4));
 			res.send(SYSADMIN);
 		} else {
 			_ACCESS_LOG.success(req.method, req.url, 'false');
@@ -266,7 +266,7 @@ app.post('/authenticate', function(req, res) {
 		if (rows && rows.length > 0) {
 			// compare raw password with hashed password
  			if (bcrypt.compareSync(payload.password, rows[0].password)) {
- 				_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows[0]));
+ 				_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows[0], undefined, 4));
  				res.send(rows[0]);
  			} else {
  				_ACCESS_LOG.success(req.method, req.url, 'false');
@@ -288,33 +288,22 @@ app.post('/subscriptions', function(req, res) {
 				"(" + parseInt(payload.user_id) + "," + parseInt(templateType === 'templateId' ? payload.templateId : payload.templateGroupId) + "," +
 				parseInt(payload.tenant_id) + "); SELECT LAST_INSERT_ID() AS request_id;";
 	connection.query(query, function(err, rows) {
+		var result1 = rows[0];
+		var result2 = rows[1];
 		if (err) {
 			_ACCESS_LOG.error(req.method, req.url, err);
 			res.status(400).send();
 			return;
 		}
-
-		if (templateType === 'templateId') {
-			// use backend to provision
-		} else if (templateType === 'templateGroupId') {
-			// use backend to provision
-		}
-
-		// if provision was successful, send back request_id successful
-		// else update database with subscription terminated
-
-
-		_ACCESS_LOG.success(req.method, req.url, 'created subscription for ' + payload.email);
-		res.status(201).send(rows[0]);
+		console.log("REQUEST ID: " + JSON.stringify(rows, undefined, 4));
+		_ACCESS_LOG.success(req.method, req.url, 'created subscription for ' + payload.user_id);
+		res.status(201).send(result2[0]);
 	});
 });
 
 // terminate subscription
 app.put('/subscriptions/:request_id/terminate', function(req, res) {
 	var params = req.params;
-
-	// perform terminate sensor using backend API
-	// on success, update subscription table
 
 	// build query
 	var query = "UPDATE subscriptions SET status='terminated', destroyed=current_timestamp WHERE request_id=" + parseInt(params.request_id);
@@ -330,20 +319,38 @@ app.put('/subscriptions/:request_id/terminate', function(req, res) {
 	});
 });
 
-// get active subscriptions
-app.get('/tenants/:tenant/users/:email/subscriptions/active', function(req, res) {
+// get subscriptions
+app.get('/tenants/:tenant/users/:email/subscriptions', function(req, res) {
 	var params = req.params;
-	var query = "SELECT users.email, tenants.name AS tenant_name, request_id, template_id, subscriptions.created " +
+	var query = "SELECT users.email, tenants.name AS tenant_name, request_id, template_id, subscriptions.status, subscriptions.created, subscriptions.destroyed " +
 				"FROM subscriptions LEFT JOIN users ON subscriptions.user_id=users.user_id " +
 				"LEFT JOIN tenants ON subscriptions.tenant_id=tenants.tenant_id " +
-				"WHERE subscriptions.status='active' AND users.email=" + _str(params.email) + " AND tenants.name=" + _str(params.tenant);
+				"WHERE users.email=" + _str(params.email) + " AND tenants.name=" + _str(params.tenant) + " ORDER BY created DESC, status ASC";
 	connection.query(query, function(err, rows) {
 		if (err) {
 			_ACCESS_LOG.error(req.method, req.url, err);
 			res.status(400).send();
 			return;
 		}
-		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows));
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows, undefined, 4));
+		res.send(rows);
+	});
+});
+
+// get active subscriptions
+app.get('/tenants/:tenant/users/:email/subscriptions/active', function(req, res) {
+	var params = req.params;
+	var query = "SELECT users.email, tenants.name AS tenant_name, request_id, template_id, subscriptions.status, subscriptions.created " +
+				"FROM subscriptions LEFT JOIN users ON subscriptions.user_id=users.user_id " +
+				"LEFT JOIN tenants ON subscriptions.tenant_id=tenants.tenant_id " +
+				"WHERE subscriptions.status='active' AND users.email=" + _str(params.email) + " AND tenants.name=" + _str(params.tenant) + " ORDER BY created DESC";
+	connection.query(query, function(err, rows) {
+		if (err) {
+			_ACCESS_LOG.error(req.method, req.url, err);
+			res.status(400).send();
+			return;
+		}
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows, undefined, 4));
 		res.send(rows);
 	});
 });
@@ -354,14 +361,14 @@ app.get('/tenants/:tenant/users/:email/subscriptions/terminated', function(req, 
 	var query = "SELECT users.email, tenants.name AS tenant_name, request_id, template_id, subscriptions.created, subscriptions.destroyed " +
 				"FROM subscriptions LEFT JOIN users ON subscriptions.user_id=users.user_id " +
 				"LEFT JOIN tenants ON subscriptions.tenant_id=tenants.tenant_id " +
-				"WHERE subscriptions.status='terminated' AND users.email=" + _str(params.email) + " AND tenants.name=" + _str(params.tenant);
+				"WHERE subscriptions.status='terminated' AND users.email=" + _str(params.email) + " AND tenants.name=" + _str(params.tenant) + " ORDER BY destroyed DESC";
 	connection.query(query, function(err, rows) {
 		if (err) {
 			_ACCESS_LOG.error(req.method, req.url, err);
 			res.status(400).send();
 			return;
 		}
-		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows));
+		_ACCESS_LOG.success(req.method, req.url, JSON.stringify(rows, undefined, 4));
 		res.send(rows);
 	});
 });
@@ -416,4 +423,5 @@ POST /subscriptions						- create subscription
 PUT  /subscriptions/:request_id/terminate	- terminate subscription
 GET  /tenants/:tenant/users/:email/subscriptions/active - get all active subscriptions for tenant user
 GET  /tenants/:tenant/users/:email/subscriptions/terminated - get all terminated subscriptions for tenant user
+GET  /tenants/:tenant/users/:email/subscriptions - get all active and terminated subscriptions
 */

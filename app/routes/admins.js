@@ -102,8 +102,10 @@ router.get('/admins/sensor-monitor', function(req, res, next) {
 							sensors[index]['log'] = body;
 						}
 						if ((index + 1) === length) {
-							render['render']['response'] = sensors;
-							res.render(path.substring(1), render);
+							setTimeout(function() {
+								render['render']['response'] = sensors;
+								res.render(path.substring(1), render);
+							}, 1000);
 						}
 					});
 				})(i);

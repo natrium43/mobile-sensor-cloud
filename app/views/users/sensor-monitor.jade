@@ -4,16 +4,18 @@ block right_pane
 	.row
 		.col-lg-6(style="text-align: center;")
 			h4
-				| Air Quality Index and Dates
-			canvas#dates-chart(width="auto", height="auto")
-			.help-block
-				| Dates
-		.col-lg-6(style="text-align: center;")
-			h4
 				| Air Quality Index and Hours of Day
 			canvas#hours-chart(width="auto", height="auto")
 			.help-block
 				| Hours
+		- var cities = JSON.parse(render.response.graph.cities);
+		- for (var i = 0; i < cities.length; i++)
+			.col-lg-6(style="text-align: center;")
+				h4
+					| Air Quality Index and Dates
+				canvas(id="city#{i}" width="auto", height="auto")
+				.help-block
+					| Dates
 	br
 	br
 	- function convertTime(hour) { var time = ""; time = hour > 12 ? (hour - 12) + ":00PM" : hour + ":00AM"; time = hour === 12 ? "12:00PM" : time; return time; }
@@ -72,28 +74,30 @@ block right_pane
 
 	script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.2/Chart.min.js")
 	script(type="text/javascript").
-		var datesChart = !{render.response.graph.dates};
-		var hoursChart = !{render.response.graph.hours};
-		var ctx = document.getElementById("dates-chart");
-		var myChart = new Chart(ctx, {
-		    type: 'line',
-		    data: {
-		        labels: datesChart.labels,
-		        datasets: datesChart.datasets
-		    },
-		    options: {
-		        scales: {
-		            yAxes: [{
-		                ticks: {
-		                    beginAtZero:true
-		                }
-		            }]
-		        }
-		    }
-		});
+		var citiesChart = !{render.response.graph.cities};
+		for (var i = 0; i < citiesChart.length; i++) {
+			var ctx = document.getElementById("city" + i);
+			var chart = new Chart(ctx, {
+			    type: 'line',
+			    data: {
+			        labels: citiesChart[i].labels,
+			        datasets: citiesChart[i].datasets
+			    },
+			    options: {
+			        scales: {
+			            yAxes: [{
+			                ticks: {
+			                    beginAtZero:true
+			                }
+			            }]
+			        }
+			    }
+			});
+		}
 
-		var ctx2 = document.getElementById("hours-chart");
-		var myChart2 = new Chart(ctx2, {
+		var hoursChart = !{render.response.graph.hours};
+		var ctx = document.getElementById("hours-chart");
+		var chart = new Chart(ctx, {
 		    type: 'line',
 		    data: {
 		        labels: hoursChart.labels,

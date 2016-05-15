@@ -29,7 +29,7 @@ var sensorSchema = new Schema({
 var Sensor = mongoose.model('Sensor',sensorSchema);
 
 io.on('connection', function(socket){
-  console.log('connection received from Provisioning');
+  console.log('connection received from Provisioning/Virtual Sensor');
   // To get messages from Provisioning server
   socket.on('eventToClient',function(data) {
     var id = data.id
