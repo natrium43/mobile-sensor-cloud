@@ -278,12 +278,100 @@ router.get('/users/cost-management', function(req, res, next) {
 	var sess = req.session;
 	var path = req.path;
 	if (!_GLOBAL.valid_session(sess, req, res)) { return; }
-	res.render(path.substring(1), {
-		render: {
-			title: 'User Dashboard',
-			session: sess,
-			section: 'cost-management'
+
+	var data = {
+		'account': {},
+		'billing': []
+	};
+
+	request.get({
+		url: _GLOBAL.config.user_db + '/tenants/' + sess.tenant + '/users/' + sess.email,
+		json: true,
+	}, function(error, response, body) {
+		if (error && response.statusCode == 400) {
+			res.status(400).send();
+			return;
 		}
+
+		data['account'] = body;
+
+		request.get({
+			url: _GLOBAL.config.user_db + '/tenants/' + sess.tenant + '/users/' + sess.email + '/subscriptions',
+			json: true,
+		}, function(error, response, body) {
+			if (error) {
+				res.status(400).send();
+				return;
+			}
+
+			if (body.length > 0) {
+				for (var i = 0; i < body.length; i++) {
+					var sub = body[i];
+					/*
+					(function(i) {
+						var sub = body[i];
+						request.get({
+							url: _GLOBAL.config.sensor_db + '/userSensors/request/' + sub.request_id + '/template/' + sub.template_id,
+							json: true,
+						}, function(error, response, innerBody) {
+							if (error) {
+								res.status(400).send();
+								return;
+							}
+
+							// merge objects
+							for (var prop in innerBody) {
+								sub[prop === 'status' ? 'sensor_status' : prop] = innerBody[prop];
+							}
+
+							console.log(JSON.stringify(sub, undefined, 4));
+							data.push(sub);
+
+							// exit
+							if ((i + 1) == body.length) {
+								setTimeout(function() {
+									render['response'] = data;
+									res.render(path.substring(1), {
+										render: render
+									});
+								}, 1000);
+							}
+						});
+					})(i);
+					*/
+
+					data.billing.push({
+						'requestId': sub.request_id,
+						'status': sub.status,
+						'usage': i + 1,
+						'rate': 0.034,
+						'cost': ((i + 1) * 0.034)
+					});
+
+					if ((i + 1)  == body.length) {
+						setTimeout(function() {
+							res.render(path.substring(1), {
+								render: {
+									title: 'User Dashboard',
+									session: sess,
+									section: 'cost-management',
+									response: data
+								}
+							});
+						}, 1000);
+					}
+				}
+			} else {
+				res.render(path.substring(1), {
+					render: {
+						title: 'User Dashboard',
+						session: sess,
+						section: 'cost-management',
+						response: data
+					}
+				});
+			}
+		});
 	});
 });
 

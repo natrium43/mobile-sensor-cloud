@@ -1,15 +1,100 @@
 extends _template
 
 block right_pane
-	.row
+	.container
 		.panel.panel-default
 			.panel-heading
-			.panel-body
-				.row
+				h4
+					| Billing & Usage
+			.table-responsive
+				table.table.table-striped
+					thead
+						tr
+							th
+								| Request ID
+							th
+								| Request Status
+							th
+								| Usage (Hours)
+							th
+								| Rate Per Hour
+							th
+								| Cost
+					tbody
+						- if (render.response.billing.length > 0)
+							- var totalCost = 0;
+							- var totalHours = 0;
+							- for (var i = 0; i < render.response.billing.length; i++)
+								- var bill = render.response.billing[i];
+								- var c = bill.status === 'active' ? 'success' : 'danger';
+								- totalCost += bill.cost;
+								- totalHours += bill.usage;
+								tr
+									td
+										= bill.requestId
+									td
+										span.label(class="label-#{c}")
+											= bill.status
+									td
+										= bill.usage
+									td
+										= '$' + bill.rate
+									td
+										= '$' + bill.cost.toFixed(2)
+							tr.info(style="font-size: 1.2em;")
+								td
+									strong
+										| Total
+								td
+								td
+									strong
+										= totalHours
+								td
+									strong
+										= '$' + render.response.billing[0].rate
+								td
+									strong
+										= '$' + totalCost.toFixed(2)
+						- else
+							tr(colspan="4")
+								td
+									| No billing information
 		.panel.panel-default
 			.panel-heading
+				h4
+					| Account Information
 			.panel-body
-	.row
-		.panel.panel-default
-			.panel-heading
-			.panel-body
+				form#my-account-form.form-horizontal(onsubmit='return false;')
+					.form-group
+						label.control-label.col-lg-3
+							| Name
+						div.col-lg-4
+							input.form-control.spacing(type='text', name='name', placeholder='First and Last Name', value="#{render.response.account.name ? render.response.account.name : ''}")
+					.form-group
+						label.control-label.col-lg-3
+							| Address
+						div.col-lg-4
+							textarea.form-control.spacing(name='address', placeholder='Address')
+								= render.response.account.address ? render.response.account.address : ''
+					.form-group
+						label.control-label.col-lg-3
+							| Email Address
+						div.col-lg-4
+							input.form-control.spacing(type='text', value="#{render.response.account.email}", name='email', readonly)
+					.form-group
+						label.control-label.col-lg-3
+							| Account Type
+						div.col-lg-4
+							input.form-control.spacing(type='text', value="#{render.session.account}", name='account', readonly)
+					.form-group
+						label.control-label.col-lg-3
+							| Tenant
+						div.col-lg-4
+							input.form-control.spacing(type='text', value="#{render.session.tenant}", name='tenant', readonly)
+					.form-group
+						div.col-lg-offset-4.col-md-12.col-sm-12.col-xs-12
+							button.btn.btn-default(type='reset')
+								| Close
+							button.btn.btn-primary(type='submit')
+								| Save
+

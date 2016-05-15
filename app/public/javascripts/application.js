@@ -145,6 +145,26 @@ $(function() {
 		});
 	});
 
+	// user account update
+	$('#my-account-form').on('submit', function() {
+		var form = $(this).closest('form');
+		var data = {
+			'name': $.trim(form.find('input[name="name"]').val()),
+			'address': $.trim(form.find('textarea[name="address"]').val())
+		};
+
+		if (data.name !== '' && data.address !== '') {
+			var email = form.find('input[name="email"]').val();
+			var tenant = form.find('input[name="tenant"]').val();
+			$.post('/db/tenants/' + tenant + '/users/' + email, data, function(data) {
+				alert('Your account has been updated!');
+				window.location.reload();
+			}).error(function(jqXHR, textStatus, errorThrown) {
+				alert('An error has occurred while updating your account.');
+			});
+		}
+	});
+
 	$('.edit-collection').on('click', function() {
 		var requestId = $(this).data('requestid');
 		var frequency = $(this).data('frequency');

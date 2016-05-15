@@ -23,18 +23,18 @@ block content
                             i.fa.fa-area-chart
                             span.hidden-xs
                                 | &nbsp;Sensor Monitoring
-                //- li(class="#{render.section === 'cost-management' ? 'active' : ''}")
-                //-     a(href='/users/cost-management', title='Cost Management')
-                //-         h5
-                //-             i.fa.fa-tags
-                //-             span.hidden-xs
-                //-                 | &nbsp;Cost Management
-                li
-                    a#my-account(href='javascript:void(0);', title='My Account', data-email="#{render.session.email}", data-tenant="#{render.session.tenant}")
+                li(class="#{render.section === 'cost-management' ? 'active' : ''}")
+                    a(href='/users/cost-management', title='Cost Management')
                         h5
-                            i.fa.fa-user
+                            i.fa.fa-tags
                             span.hidden-xs
-                                | &nbsp;My Account
+                                | &nbsp;Account & Billing
+                //- li
+                //-     a#my-account(href='javascript:void(0);', title='My Account', data-email="#{render.session.email}", data-tenant="#{render.session.tenant}")
+                //-         h5
+                //-             i.fa.fa-user
+                //-             span.hidden-xs
+                //-                 | &nbsp;My Account
                 hr
                 li
                     a(href='/logout')
