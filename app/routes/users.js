@@ -45,7 +45,7 @@ router.get('/users/sensor-management', function(req, res, next) {
 							sub[prop === 'status' ? 'sensor_status' : prop] = innerBody[prop];
 						}
 
-						console.log(JSON.stringify(sub, undefined, 4));
+						//console.log(JSON.stringify(sub, undefined, 4));
 						data.push(sub);
 
 						// exit
@@ -132,146 +132,171 @@ router.get('/users/sensor-monitor', function(req, res, next) {
 	var sess = req.session;
 	var path = req.path;
 	if (!_GLOBAL.valid_session(sess, req, res)) { return; }
-
-	var test = [{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,
-				"Longitude":-121.9,"ParameterName":"O3","AQI":34,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ",
-				"HourObserved":18,"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,
-				"ParameterName":"PM2.5","AQI":38,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,
-				"LocalTimeZone":"PST","ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3",
-				"AQI":34,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-09 ","HourObserved":18,"LocalTimeZone":"PST",
-				"ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":38,
-				"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-10 ","HourObserved":16,"LocalTimeZone":"PST",
-				"ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":43,
-				"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-10 ","HourObserved":16,"LocalTimeZone":"PST",
-				"ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":56,
-				"Category":{"Number":2,"Name":"Moderate"}},{"DateObserved":"2016-05-10 ","HourObserved":20,"LocalTimeZone":"PST",
-				"ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"O3","AQI":31,
-				"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-10 ","HourObserved":20,"LocalTimeZone":"PST",
-				"ReportingArea":"San Jose","StateCode":"CA","Latitude":37.33,"Longitude":-121.9,"ParameterName":"PM2.5","AQI":57,
-				"Category":{"Number":2,"Name":"Moderate"}}, {"DateObserved":"2016-05-13 ","HourObserved":17,"LocalTimeZone":"PST",
-				"ReportingArea":"San Francisco","StateCode":"CA","Latitude":37.75,"Longitude":-122.43,"ParameterName":"O3","AQI":35,
-				"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-13 ","HourObserved":17,"LocalTimeZone":"PST","ReportingArea":"San Francisco",
-				"StateCode":"CA","Latitude":37.75,"Longitude":-122.43,"ParameterName":"PM2.5","AQI":26,"Category":{"Number":1,"Name":"Good"}},
-				{"DateObserved":"2016-05-13 ","HourObserved":17,"LocalTimeZone":"PST","ReportingArea":"W San Fernando Vly","StateCode":"CA",
-				"Latitude":34.1991,"Longitude":-118.5327,"ParameterName":"O3","AQI":47,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-13 ",
-				"HourObserved":17,"LocalTimeZone":"PST","ReportingArea":"W San Fernando Vly","StateCode":"CA","Latitude":34.1991,"Longitude":-118.5327,
-				"ParameterName":"PM2.5","AQI":44,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-13 ","HourObserved":21,
-				"LocalTimeZone":"PST","ReportingArea":"W San Fernando Vly","StateCode":"CA","Latitude":34.1991,"Longitude":-118.5327,
-				"ParameterName":"O3","AQI":43,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-13 ","HourObserved":21,
-				"LocalTimeZone":"PST","ReportingArea":"W San Fernando Vly","StateCode":"CA","Latitude":34.1991,"Longitude":-118.5327,
-				"ParameterName":"PM2.5","AQI":64,"Category":{"Number":2,"Name":"Moderate"}},{"DateObserved":"2016-05-13 ","HourObserved":21,
-				"LocalTimeZone":"PST","ReportingArea":"San Francisco","StateCode":"CA","Latitude":37.75,"Longitude":-122.43,"ParameterName":"O3",
-				"AQI":34,"Category":{"Number":1,"Name":"Good"}},{"DateObserved":"2016-05-13 ","HourObserved":21,"LocalTimeZone":"PST",
-				"ReportingArea":"San Francisco","StateCode":"CA","Latitude":37.75,"Longitude":-122.43,"ParameterName":"PM2.5","AQI":19,
-				"Category":{"Number":1,"Name":"Good"}}];
-	
-	// parse data by cities
-	var cities = {};
-	for (var i = 0; i < test.length; i++) {
-		var t = test[i];
-		if (!cities.hasOwnProperty(t.ReportingArea)) {
-			cities[t.ReportingArea] = {
-				aqi: [],
-				dates: [],
-				times: []
-			};
-		}
-		cities[t.ReportingArea].aqi.push(t.AQI);
-		cities[t.ReportingArea].dates.push(t.DateObserved);
-		cities[t.ReportingArea].times.push(t.HourObserved);
-	}
-
-	var _color = {
-		border: function(offset) {
-			g = (128 - offset >= 0 ? 128 - offset : 128 + offset);
-			b = (255 - offset >= 0 ? 255 - offset : 0);
-			return "rgba(0," + g + "," + b + ", 1)";
-		},
-		background: function(offset) {
-			g = (128 - offset >= 0 ? 128 - offset : 128 + offset);
-			b = (255 - offset >= 0 ? 255 - offset : 0);
-			return "rgba(0," + g + "," + b + ",0.5)";
+	var render = {
+		title: 'User Dashboard',
+		session: sess,
+		section: 'sensor-monitor',
+		response: {
+			graph: {
+				cities: JSON.stringify([]),
+				hours: JSON.stringify([])
+			},
+			data: []
 		}
 	};
-
-	var _colors = [
-		{
-			"border": "rgba(255,0,0,1)",
-			"background": "rgba(255,0,0,0.5)"
-		},
-		{
-			"border": "rgba(72,61,139,1)",
-			"background": "rgba(72,61,139,0.5)"
-		},
-		{
-			"border": "rgba(0,0,255,1)",
-			"background": "rgba(0,0,255,0.5)"
-		},
-		{
-			"border": "rgba(0,255,255,1)",
-			"background": "rgba(0,255,255,0.5)"
-		},
-		{
-			"border": "rgba(255,0,255,1)",
-			"background": "rgba(255,0,255,0.5)"
-		},
-		{
-			"border": "rgba(0,255,0,1)",
-			"background": "rgba(0,255,0,0.5)"
+	request.get({
+		url: _GLOBAL.config.user_db + '/tenants/' + sess.tenant + '/users/' + sess.email + '/subscriptions/active',
+		json: true,
+	}, function(error, response, body) {
+		if (error) {
+			res.status(400).send();
+			return;
 		}
-	];
+		var sensorData = [];
+		if (body.length > 0) {
+			for (var i = 0; i < body.length; i++) {
+				(function(i) {
+					var sub = body[i];
+					request.get({
+						url: _GLOBAL.config.vsensor + '/GetSensorFields/' + sub.request_id,
+						json: true,
+					}, function(error, response, innerBody) {
+						if (error) {
+							res.status(400).send();
+							return;
+						}
 
-	var cityGraphs = [];
+						if (innerBody && innerBody.length > 0) {
+							for (var j = 0; j < innerBody.length; j++) {
+								sensorData.push(innerBody[j]);
+							}
+						}
 
-	var dateGraphs = {
-		'datasets': [],
-		'labels': []
-	};
-	var hoursGraphs = {
-		'datasets': [],
-		'labels': []
-	};
-	var offset = 0;
-	for (var c in cities) {
-		cityGraphs.push({
-			'datasets': [
-			{
-				label: c,
-				borderColor: _colors[offset].border,
-				backgroundColor: _colors[offset].background,
-				data: cities[c].aqi
-			}],
-			'labels': cities[c].dates
-		});
-
-		hoursGraphs.datasets.push({
-			label: c,
-			borderColor: _colors[offset].border,
-			//backgroundColor: _colors[offset].background,
-	        data: cities[c].aqi
-		});
-
-		Array.prototype.push.apply(hoursGraphs.labels, cities[c].times);
-		offset ++;
-		offset = offset > _colors.length ?  0 : offset;
-	}
-
-	hoursGraphs.labels.sort();
-
-	res.render(path.substring(1), {
-		render: {
-			title: 'User Dashboard',
-			session: sess,
-			section: 'sensor-monitor',
-			response: {
-				graph: {
-					cities: JSON.stringify(cityGraphs),
-					hours: JSON.stringify(hoursGraphs)
-				},
-				data: test
+						// exit
+						if ((i + 1) == body.length) {
+							setTimeout(function() {
+								parseSensorData(sensorData);
+							}, 1000);
+						}
+					});
+				})(i);
 			}
+		} else {
+			res.render(path.substring(1), {
+				render: render
+			});
 		}
 	});
+
+	function parseSensorData(sensorData) {
+		// parse data by cities
+		var cities = {};
+		for (var i = 0; i < sensorData.length; i++) {
+			var t = sensorData[i];
+			if (!cities.hasOwnProperty(t.ReportingArea)) {
+				cities[t.ReportingArea] = {
+					aqi: [],
+					dates: [],
+					times: []
+				};
+			}
+			cities[t.ReportingArea].aqi.push(t.AQI);
+			cities[t.ReportingArea].dates.push(t.DateObserved);
+			cities[t.ReportingArea].times.push(t.HourObserved);
+		}
+
+		var _color = {
+			border: function(offset) {
+				g = (128 - offset >= 0 ? 128 - offset : 128 + offset);
+				b = (255 - offset >= 0 ? 255 - offset : 0);
+				return "rgba(0," + g + "," + b + ", 1)";
+			},
+			background: function(offset) {
+				g = (128 - offset >= 0 ? 128 - offset : 128 + offset);
+				b = (255 - offset >= 0 ? 255 - offset : 0);
+				return "rgba(0," + g + "," + b + ",0.5)";
+			}
+		};
+
+		var _colors = [
+			{
+				"border": "rgba(255,0,0,1)",
+				"background": "rgba(255,0,0,0.5)"
+			},
+			{
+				"border": "rgba(72,61,139,1)",
+				"background": "rgba(72,61,139,0.5)"
+			},
+			{
+				"border": "rgba(0,0,255,1)",
+				"background": "rgba(0,0,255,0.5)"
+			},
+			{
+				"border": "rgba(0,255,255,1)",
+				"background": "rgba(0,255,255,0.5)"
+			},
+			{
+				"border": "rgba(255,0,255,1)",
+				"background": "rgba(255,0,255,0.5)"
+			},
+			{
+				"border": "rgba(0,255,0,1)",
+				"background": "rgba(0,255,0,0.5)"
+			}
+		];
+
+		var cityGraphs = [];
+
+		var dateGraphs = {
+			'datasets': [],
+			'labels': []
+		};
+		var hoursGraphs = {
+			'datasets': [],
+			'labels': []
+		};
+		var offset = 0;
+		for (var c in cities) {
+			cityGraphs.push({
+				'datasets': [
+				{
+					label: c,
+					borderColor: _colors[offset].border,
+					backgroundColor: _colors[offset].background,
+					data: cities[c].aqi
+				}],
+				'labels': cities[c].dates
+			});
+
+			hoursGraphs.datasets.push({
+				label: c,
+				borderColor: _colors[offset].border,
+				//backgroundColor: _colors[offset].background,
+		        data: cities[c].aqi
+			});
+
+			Array.prototype.push.apply(hoursGraphs.labels, cities[c].times);
+			offset ++;
+			offset = offset > _colors.length ?  0 : offset;
+		}
+
+		hoursGraphs.labels.sort();
+
+		res.render(path.substring(1), {
+			render: {
+				title: 'User Dashboard',
+				session: sess,
+				section: 'sensor-monitor',
+				response: {
+					graph: {
+						cities: JSON.stringify(cityGraphs),
+						hours: JSON.stringify(hoursGraphs)
+					},
+					data: sensorData
+				}
+			}
+		});
+	}
 });
 
 router.get('/users/cost-management', function(req, res, next) {
@@ -305,13 +330,11 @@ router.get('/users/cost-management', function(req, res, next) {
 			}
 
 			if (body.length > 0) {
-				for (var i = 0; i < body.length; i++) {
-					var sub = body[i];
-					/*
+				for (var i = 0; i < body.length; i++) {				
 					(function(i) {
 						var sub = body[i];
 						request.get({
-							url: _GLOBAL.config.sensor_db + '/userSensors/request/' + sub.request_id + '/template/' + sub.template_id,
+							url: _GLOBAL.config.vsensor + '/SensorObjectUsage/' + sub.request_id,
 							json: true,
 						}, function(error, response, innerBody) {
 							if (error) {
@@ -319,47 +342,31 @@ router.get('/users/cost-management', function(req, res, next) {
 								return;
 							}
 
-							// merge objects
-							for (var prop in innerBody) {
-								sub[prop === 'status' ? 'sensor_status' : prop] = innerBody[prop];
-							}
-
-							console.log(JSON.stringify(sub, undefined, 4));
-							data.push(sub);
+							console.log(JSON.stringify(innerBody, undefined, 4));
+							var usage = innerBody.usage;
+							data.billing.push({
+								'requestId': sub.request_id,
+								'status': sub.status,
+								'usage': usage,
+								'rate': 0.034,
+								'cost': (usage * 0.034)
+							});
 
 							// exit
-							if ((i + 1) == body.length) {
+							if ((i + 1)  == body.length) {
 								setTimeout(function() {
-									render['response'] = data;
 									res.render(path.substring(1), {
-										render: render
+										render: {
+											title: 'User Dashboard',
+											session: sess,
+											section: 'cost-management',
+											response: data
+										}
 									});
 								}, 1000);
 							}
 						});
 					})(i);
-					*/
-
-					data.billing.push({
-						'requestId': sub.request_id,
-						'status': sub.status,
-						'usage': i + 1,
-						'rate': 0.034,
-						'cost': ((i + 1) * 0.034)
-					});
-
-					if ((i + 1)  == body.length) {
-						setTimeout(function() {
-							res.render(path.substring(1), {
-								render: {
-									title: 'User Dashboard',
-									session: sess,
-									section: 'cost-management',
-									response: data
-								}
-							});
-						}, 1000);
-					}
 				}
 			} else {
 				res.render(path.substring(1), {

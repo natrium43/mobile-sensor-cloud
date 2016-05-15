@@ -5,7 +5,7 @@ var winston = require('winston');
 var sensor_logger = new winston.Logger({
   transports: [
     new (winston.transports.File)({
-    	filename: './log/sensors.log',
+    	filename: 'log/sensors.log',
 		level: 'info',
 	    json: true,
 	    timestamp: true

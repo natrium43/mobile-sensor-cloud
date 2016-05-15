@@ -13,7 +13,7 @@ app.use(cors());
 
 // logger
 winston.add(winston.transports.File, {
-    filename: './log/access.log',
+    filename: 'log/access.log',
     level: 'info',
     json: false,
     timestamp: true

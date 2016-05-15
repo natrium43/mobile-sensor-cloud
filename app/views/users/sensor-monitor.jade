@@ -1,23 +1,25 @@
 extends _template
 
 block right_pane
-	.row
-		.col-lg-6(style="text-align: center;")
-			h4
-				| Air Quality Index and Hours of Day
-			canvas#hours-chart(width="auto", height="auto")
-			.help-block
-				| Hours
-		- var cities = JSON.parse(render.response.graph.cities);
-		- for (var i = 0; i < cities.length; i++)
+	- var cities = JSON.parse(render.response.graph.cities);
+	- if (cities.length > 0)
+		.row
 			.col-lg-6(style="text-align: center;")
 				h4
-					| Air Quality Index and Dates
-				canvas(id="city#{i}" width="auto", height="auto")
+					| Air Quality Index and Hours of Day
+				canvas#hours-chart(width="auto", height="auto")
 				.help-block
-					| Dates
-	br
-	br
+					| Hours
+			- var cities = JSON.parse(render.response.graph.cities);
+			- for (var i = 0; i < cities.length; i++)
+				.col-lg-6(style="text-align: center;")
+					h4
+						| Air Quality Index and Dates
+					canvas(id="city#{i}" width="auto", height="auto")
+					.help-block
+						| Dates
+		br
+		br
 	- function convertTime(hour) { var time = ""; time = hour > 12 ? (hour - 12) + ":00PM" : hour + ":00AM"; time = hour === 12 ? "12:00PM" : time; return time; }
 	- var aqi_color = {"1": "#008000", "2": "#ffd700", "3": "#ff7e00", "4": "#ff0000", "5": "#99004c", "6": "#7e0023"}
 	.row
@@ -25,11 +27,13 @@ block right_pane
 			.panel.panel-default
 				.panel-heading
 					strong
-						| Sensor Data
+						| Sensor Data Collection
 				.table-responsive
 					table.table.table-striped
 						thead
 							tr
+								th
+									| Request ID
 								th
 									| Date
 								th
@@ -49,28 +53,36 @@ block right_pane
 								th
 									| AQI Descriptor
 						tbody
-							- for (var i = 0; i < render.response.data.length; i++)
-								- var t = render.response.data[i];
+							- if (render.response.data.length > 0)
+								- for (var i = 0; i < render.response.data.length; i++)
+									- var t = render.response.data[i];
+									tr
+										td
+											= t.RequestId
+										td
+											= t.DateObserved
+										td
+											= convertTime(t.HourObserved)
+										td
+											= t.LocalTimeZone
+										td
+											= t.ReportingArea + " (" + t.StateCode + ")"
+										td
+											= t.Latitude
+										td
+											= t.Longitude
+										td
+											= t.ParameterName
+										td
+											= t.AQI
+										td
+											span.label(style="background-color: #{aqi_color[t.Category.Number.toString()]}")
+												= t.Category.Name
+							- else
 								tr
-									td
-										= t.DateObserved
-									td
-										= convertTime(t.HourObserved)
-									td
-										= t.LocalTimeZone
-									td
-										= t.ReportingArea + " (" + t.StateCode + ")"
-									td
-										= t.Latitude
-									td
-										= t.Longitude
-									td
-										= t.ParameterName
-									td
-										= t.AQI
-									td
-										span.label(style="background-color: #{aqi_color[t.Category.Number.toString()]}")
-											= t.Category.Name
+									td(colspan="10")
+										| No sensor data available
+
 
 	script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.2/Chart.min.js")
 	script(type="text/javascript").

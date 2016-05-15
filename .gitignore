@@ -1,3 +1,6 @@
 # ignore all .DS_Store files
 **/.DS_Store
 **/node_modules/
+management/log/access.log
+monitor/log/resources.log
+monitor/log/sensors.log

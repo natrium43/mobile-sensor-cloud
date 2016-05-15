@@ -5,7 +5,7 @@ var winston = require('winston');
 var resources_logger = new winston.Logger({
   transports: [
     new (winston.transports.File)({
-    	filename: './log/resources.log',
+    	filename: 'log/resources.log',
 		level: 'info',
 	    json: true,
 	    timestamp: true
