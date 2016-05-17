@@ -1,20 +1,15 @@
 extends _template
 
 block right_pane
-	- var cities = JSON.parse(render.response.graph.cities);
+	- var cities = JSON.parse(render.response.graph);
 	- if (cities.length > 0)
 		.row
-			.col-lg-6(style="text-align: center;")
-				h4
-					| Air Quality Index and Hours of Day
-				canvas#hours-chart(width="auto", height="auto")
-				.help-block
-					| Hours
-			- var cities = JSON.parse(render.response.graph.cities);
 			- for (var i = 0; i < cities.length; i++)
 				.col-lg-6(style="text-align: center;")
 					h4
-						| Air Quality Index and Dates
+						= cities[i].title
+					| Air Quality Index and Dates
+					br
 					canvas(id="city#{i}" width="auto", height="auto")
 					.help-block
 						| Dates
@@ -86,7 +81,7 @@ block right_pane
 
 	script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.2/Chart.min.js")
 	script(type="text/javascript").
-		var citiesChart = !{render.response.graph.cities};
+		var citiesChart = !{render.response.graph};
 		for (var i = 0; i < citiesChart.length; i++) {
 			var ctx = document.getElementById("city" + i);
 			var chart = new Chart(ctx, {
@@ -106,23 +101,3 @@ block right_pane
 			    }
 			});
 		}
-
-		var hoursChart = !{render.response.graph.hours};
-		var ctx = document.getElementById("hours-chart");
-		var chart = new Chart(ctx, {
-		    type: 'line',
-		    data: {
-		        labels: hoursChart.labels,
-		        datasets: hoursChart.datasets
-		    },
-		    options: {
-		        scales: {
-		            yAxes: [{
-		                ticks: {
-		                    beginAtZero:true
-		                }
-		            }]
-		        }
-		    }
-		});
-		

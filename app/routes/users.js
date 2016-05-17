@@ -190,19 +190,37 @@ router.get('/users/sensor-monitor', function(req, res, next) {
 
 	function parseSensorData(sensorData) {
 		// parse data by cities
+		var tempCities = {};
 		var cities = {};
 		for (var i = 0; i < sensorData.length; i++) {
 			var t = sensorData[i];
-			if (!cities.hasOwnProperty(t.ReportingArea)) {
+			if (!tempCities.hasOwnProperty(t.ReportingArea)) {
+				tempCities[t.ReportingArea] = [];
 				cities[t.ReportingArea] = {
-					aqi: [],
-					dates: [],
-					times: []
+					'O3': {
+						'aqi': [],
+					},
+					'PM2.5': {
+						'aqi': [],
+					},
+					'PM10': {
+						'aqi': [],
+					},
+					'dates': []
 				};
 			}
-			cities[t.ReportingArea].aqi.push(t.AQI);
-			cities[t.ReportingArea].dates.push(t.DateObserved);
-			cities[t.ReportingArea].times.push(t.HourObserved);
+			tempCities[t.ReportingArea].push(t);
+		}
+
+		// parse data for different parameter names
+		for (var city in tempCities) {
+			var c = tempCities[city];
+			for (var i = 0; i < c.length; i++) {
+				cities[city][c[i].ParameterName]['aqi'].push(c[i].AQI);
+			}
+			if (c.length > 0) {
+				cities[city]['dates'].push(c[i].DateObserved);
+			}
 		}
 
 		var _color = {
@@ -246,41 +264,29 @@ router.get('/users/sensor-monitor', function(req, res, next) {
 		];
 
 		var cityGraphs = [];
-
-		var dateGraphs = {
-			'datasets': [],
-			'labels': []
-		};
-		var hoursGraphs = {
-			'datasets': [],
-			'labels': []
-		};
-		var offset = 0;
-		for (var c in cities) {
+		for (var city in cities) {
+			var offset = 0;
+			var c = cities[city];
+			var labels = c.dates;
+			var datasets = [];
+			for (var param in c) {
+				if (param !== 'dates') {
+					datasets.push({
+						label: param,
+						borderColor: _colors[offset].border,
+						backgroundColor: _colors[offset].background,
+						data: c[param].aqi
+					});
+					offset++;
+				}
+			}
 			cityGraphs.push({
-				'datasets': [
-				{
-					label: c,
-					borderColor: _colors[offset].border,
-					backgroundColor: _colors[offset].background,
-					data: cities[c].aqi
-				}],
-				'labels': cities[c].dates
+				'labels': labels,
+				'datasets': datasets,
+				'title': city
 			});
-
-			hoursGraphs.datasets.push({
-				label: c,
-				borderColor: _colors[offset].border,
-				//backgroundColor: _colors[offset].background,
-		        data: cities[c].aqi
-			});
-
-			Array.prototype.push.apply(hoursGraphs.labels, cities[c].times);
-			offset ++;
-			offset = offset > _colors.length ?  0 : offset;
 		}
-
-		hoursGraphs.labels.sort();
+		console.log(JSON.stringify(cityGraphs, undefined, 4));
 
 		res.render(path.substring(1), {
 			render: {
@@ -288,10 +294,7 @@ router.get('/users/sensor-monitor', function(req, res, next) {
 				session: sess,
 				section: 'sensor-monitor',
 				response: {
-					graph: {
-						cities: JSON.stringify(cityGraphs),
-						hours: JSON.stringify(hoursGraphs)
-					},
+					graph: JSON.stringify(cityGraphs),
 					data: sensorData
 				}
 			}
