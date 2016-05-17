@@ -215,11 +215,14 @@ router.get('/users/sensor-monitor', function(req, res, next) {
 		// parse data for different parameter names
 		for (var city in tempCities) {
 			var c = tempCities[city];
+			var count = 0;
 			for (var i = 0; i < c.length; i++) {
 				cities[city][c[i].ParameterName]['aqi'].push(c[i].AQI);
-			}
-			if (c.length > 0) {
-				cities[city]['dates'].push(c[i].DateObserved);
+				if (count == 0) {
+					cities[city]['dates'].push(c[i].DateObserved);
+				}
+				count++;
+				count = (count > 2 ? 0 : count);
 			}
 		}
 
